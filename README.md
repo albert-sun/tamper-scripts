@@ -3,7 +3,8 @@
 
 A collection of miscellaneous Tampermonkey userscripts primarily centered around automation and convenience. All scripts come with a convenient user interface for settings, logging, and other functionality. For script support, please provide me with the script used, version, page URL, logging output (if applicable), and detailed description of the issue.
 
- **Please let me know if you ever got anything using my scripts, it makes me feel warm isnide knowing my scripts are at least somewhat useful. Thanks and good luck!**  
+**DO NOT download anything straight from the main branch as it could be outdated (I only pull request major and minor script versions)**.
+**Please let me know if you ever got anything using my scripts, it makes me feel warm isnide knowing my scripts are at least somewhat useful. Thanks and good luck!**  
 
 **Discord**: akito#9528  
 **Twitch (direct message): AkitoApocalypse**  
