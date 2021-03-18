@@ -8,7 +8,7 @@ A collection of miscellaneous Tampermonkey userscripts primarily centered around
 
 **Discord**: akito#9528  
 **Twitch (direct message): AkitoApocalypse**  
-[Donate via PayPal](<https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD>) | [Bitcoin](1KgcytPHXNwboNbXUN3ZyuASDZWt8Qcf1t) | [Ethereum](0xAf9EB617c81B050517E9A8826E4c93DcC182AeaD)  
+[Donate via PayPal](<https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD>) | 1KgcytPHXNwboNbXUN3ZyuASDZWt8Qcf1t | 0xAf9EB617c81B050517E9A8826E4c93DcC182AeaD
 
 # Installation  
 1. Install either the TamperMonkey extension for Chrome / derivatives or the GreaseMonkey extension for Firefox. 
@@ -19,8 +19,7 @@ A collection of miscellaneous Tampermonkey userscripts primarily centered around
 # Current Scripts
 |Script|Latest Version|Page Scope|Features|
 |----------------|:------------:|------------------------|--------|
-|[Product Details](https://github.com/albert-sun/tamper-scripts/tree/bestbuy-products-2.1.0/bestbuy-products/script_main.js)|2.0.2|Individual product pages|<ul><li>Automatic interval page reloading for refreshing current status of product, useful for refreshing availability on sold out or unavailable products</li><li>Automatic button clicking for initially entering product queue and when queue pops, along with audio notification and opening of cart window whenever item is successfully added to cart</ul>|
-|[Cart Saved Items](https://github.com/albert-sun/tamper-scripts/tree/bestbuy-cart-2.2.0/bestbuy-cart/script_main.js)|2.1.0|Cart page|<ul><li>Simple adblock detection and notification (having adblock sometimes messes with website functionality)<li>Automatic interval page reloading for refreshing availability on sold out or unavailable products</li><li>Keyword whitelist and blacklist for processing saved items (note that bundles aren't shown on the cart saved items display)</li></li>Automatic button clicking for initially entering product queue and when queue pops, along with audio notification whenever item is successfully added to cart</li></ul>|
+|[Cart Saved Items](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.2.0/bestbuy-cart/script_main.js)|2.1.0|Cart page|<ul><li>Simple adblock detection and notification (having adblock sometimes messes with website functionality)<li>Automatic interval page reloading for refreshing availability on sold out or unavailable products</li><li>Keyword whitelist and blacklist for processing saved items (note that bundles aren't shown on the cart saved items display)</li></li>Automatic button clicking for initially entering product queue and when queue pops, along with audio notification whenever item is successfully added to cart</li></ul>|
 
 # Frequently Asked Questions
 **Q: Do scripts work on multiple / non-focused tabs?**  
