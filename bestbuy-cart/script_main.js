@@ -4,13 +4,13 @@
 // @version      2.2.0
 // @description  Best Buy queue automation for saved items from the cart page
 // @author       akito#9528 / Albert Sun
-// @updateURL    https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/bestbuy-cart/script_main.js
-// @downloadURL  https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/bestbuy-cart/script_main.js
-// @require      https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/bestbuy-cart/utilities.js
-// @require      https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/bestbuy-cart/user_interface.js
+// @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
+// @downloadURL  https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/utilities.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/user_interface.js
 // @require      https://code.jquery.com/jquery-2.2.3.min.js
 // @require      https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js
-// @resource css https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/bestbuy-cart/styling.css
+// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/styling.css
 // @match        https://www.bestbuy.com/cart
 // @run-at       document-start
 // @grant        GM_getResourceText
@@ -21,11 +21,12 @@
 // ==/UserScript==
 /* globals $, callbackArray, callbackObject, checkBlackWhitelist, edgeDetect, elementColor */
 /* globals generateInterface, generateWindow, designateLogging, designateSettings */
+const j$ = $; // Just in case websites like replacing $ with some abomination
 
 const version = "2.1.0";
 const scriptName = "bestBuy-cartSavedItems"; // Key prefix for settings retrieval
 const scriptText = `Best Buy (Cart Saved Items) v${version} | Albert Sun / akito#9528`;
-const messageText = "Thank you and good luck! | https://github.com/albert-sun/bestbuy-queue-automation";
+const messageText = "Thank you and good luck! | https://github.com/albert-sun/tamper-scripts";
 
 // Script-specific settings, please don't modify as it probably won't do anything!
 // Instead, use the settings user interface implemented within the script itself.
