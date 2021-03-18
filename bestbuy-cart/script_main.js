@@ -57,6 +57,7 @@ let loggingFunction = undefined; // Leave for "global" logging usage by script a
 
 // Load script user interface consisting of footer and individual windows
 // Also generates and sets debug logging function for script-wide usage
+// @returns {function}
 async function loadInterface() {
     // Load SimpleBar and script-wide CSS
     GM_addStyle(GM_getResourceText("css"));
@@ -94,11 +95,11 @@ async function loadInterface() {
 
     // Designate the two windows as setting and logging windows
     designateSettings(settingsDiv, settings);
-    loggingFunc = designateLogging(loggingDiv);
+    const logFunc = designateLogging(loggingDiv);
 
-    loggingFunc("Finished initializing script user interface");
+    logFunc("Finished initializing script user interface");
 
-    return;
+    return logFunc;
 }
 
 // Called on cart change, clear storage and re-retrieve HTML attributes of saved items
