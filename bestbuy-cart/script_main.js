@@ -52,7 +52,7 @@ const adblockURLs = [
 ]; // Test request URLs for detecting adblock status
 const keyWhitelist = ["3060", "3070", "3080", "3090", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PS5"];
 const keyBlacklist = []; // Temporary, blacklist > whitelist
-const audio = new Audio("https://raw.githubusercontent.com/albert-sun/bestbuy-queue-automation/main/bestbuy-cart/notification.mp3");
+const audio = new Audio("https://github.com/albert-sun/tamper-scripts/blob/main/notification.mp3?raw=true");
 let loggingFunction = undefined; // Leave for "global" logging usage by script and requirements
 
 // Load script user interface consisting of footer and individual windows
