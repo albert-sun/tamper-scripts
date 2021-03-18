@@ -21,6 +21,7 @@
 // ==/UserScript==
 /* globals $, callbackArray, callbackObject, checkBlackWhitelist, edgeDetect, elementColor */
 /* globals generateInterface, generateWindow, designateLogging, designateSettings */
+const j$ = $; // Just in case websites like replacing $ with some abomination
 
 const version = "2.1.0";
 const scriptName = "bestBuy-cartSavedItems"; // Key prefix for settings retrieval
