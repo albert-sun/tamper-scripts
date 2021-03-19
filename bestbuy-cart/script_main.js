@@ -23,7 +23,7 @@
 /* globals generateInterface, generateWindow, designateLogging, designateSettings */
 const j$ = $; // Just in case websites like replacing $ with some abomination
 
-const version = "2.2.0";
+const version = "2.1.0";
 const scriptName = "bestBuy-cartSavedItems"; // Key prefix for settings retrieval
 const scriptText = `Best Buy (Cart Saved Items) v${version} | Albert Sun / akito#9528`;
 const messageText = "Thank you and good luck! | https://github.com/albert-sun/tamper-scripts";
