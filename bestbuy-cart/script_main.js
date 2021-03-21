@@ -36,7 +36,7 @@ const settings = {
     initialClick: { description: "Auto-Add Button Clicking", type: "boolean", value: true },
     colorInterval: { description: "Color Polling Interval (ms)", type: "number", value: 250 },
     loadUnloadInterval: { description: "Load/Unload Polling Interval (ms)", type: "number", value: 50 },
-    autoReloadInterval: { description: "Auto Page Reload Interval (ms, <1000 to disable)", type: "number", value: 0},
+    autoReloadInterval: { description: "Auto Page Reload Interval (ms, <10000 to disable)", type: "number", value: 0},
     errorResetDelay: { description: "Error Reset Delay (ms)", type: "number", value: 250 },
     cartCheckDelay: { description: "Cart Checking Delay (ms)", type: "number", value: 250 },
     cartSkipTimeout: { description: "Cart Skip Timeout (ms)", type: "number", value: 5000 },
@@ -230,7 +230,7 @@ async function resetSaved(skipUnload, fromCart) {
 
     // Setup auto page refresh, not sure if zero value does anything
     // Perform first to reduce chances of not working when tab not focused
-    if(settings.autoReloadInterval.value > 1000) {
+    if(settings.autoReloadInterval.value > 10000) {
         setTimeout(function() {
             window.location.reload();
         }, settings.autoReloadInterval.value);
