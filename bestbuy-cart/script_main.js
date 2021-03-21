@@ -1,16 +1,16 @@
 // ==UserScript==
 // @name         Best Buy Automation (Cart Saved Items)
 // @namespace    akito
-// @version      2.3.0
+// @version      2.4.0
 // @description  Best Buy queue automation for saved items from the cart page
 // @author       akito#9528 / Albert Sun
 // @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
 // @downloadURL  https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
-// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.3.0/bestbuy-cart/utilities.js
-// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.3.0/bestbuy-cart/user_interface.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.4.0/bestbuy-cart/utilities.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.4.0/bestbuy-cart/user_interface.js
 // @require      https://code.jquery.com/jquery-2.2.3.min.js
 // @require      https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js
-// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.3.0/bestbuy-cart/styling.css
+// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.4.0/bestbuy-cart/styling.css
 // @match        https://www.bestbuy.com/cart
 // @run-at       document-start
 // @grant        GM_getResourceText
@@ -24,7 +24,7 @@
 /* globals generateInterface, generateWindow, designateLogging, designateSettings */
 const j$ = $; // Just in case websites like replacing $ with some abomination
 
-const version = "2.3.0";
+const version = "2.4.0";
 const scriptName = "bestBuy-cartSavedItems"; // Key prefix for settings retrieval
 const scriptText = `Best Buy (Cart Saved Items) v${version} | Albert Sun / akito#9528`;
 const messageText = "Thank you and good luck! | https://github.com/albert-sun/tamper-scripts";
@@ -36,6 +36,7 @@ const settings = {
     initialClick: { description: "Auto-Add Button Clicking", type: "boolean", value: true },
     colorInterval: { description: "Color Polling Interval (ms)", type: "number", value: 250 },
     loadUnloadInterval: { description: "Load/Unload Polling Interval (ms)", type: "number", value: 50 },
+    autoReloadInterval: { description: "Auto Page Reload Interval (ms, 0 to disable)", type: "number", value: 0},
     errorResetDelay: { description: "Error Reset Delay (ms)", type: "number", value: 250 },
     cartCheckDelay: { description: "Cart Checking Delay (ms)", type: "number", value: 250 },
     cartSkipTimeout: { description: "Cart Skip Timeout (ms)", type: "number", value: 5000 },
@@ -256,14 +257,25 @@ async function resetSaved(skipUnload, fromCart) {
         });
 
         loggingFunction("Performing initial saved items setup (bundles not supported by cart page)");
+
         await resetSaved(true, false); // Initial call on page load
 
-        loggingFunction("Initialized callback to saved items reset on cart change (including pickup/shipping change)");
+        loggingFunction("Initializing callback to saved items reset on cart change (including pickup/shipping change)");
 
         // Force refresh of saved item elements whenever order summary changes (cart addition / removal?)
         // window.cart extraordinarily slippery, unable to hook getters/setters or anything
         // Currently triggers on picking/shipping swaps but don't want custom callback function...
         callbackObject(__META_LAYER_META_DATA, "order", function() { resetSaved(false, true) }, "set");
+
+        // Setup auto page refresh, not sure if zero value does anything
+        if(settings.autoReloadInterval.value !== 0) {
+            loggingFunction("Initializing auto page refresh interval from settings");
+
+            setTimeout(function() {
+                loggingFunction("Page refresh interval elapsed, auto refreshing");
+                window.location.reload();
+            }, settings.autoReloadInterval.value);
+        }
     });
 }());
 
