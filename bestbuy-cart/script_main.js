@@ -1,16 +1,16 @@
 // ==UserScript==
 // @name         Best Buy Automation (Cart Saved Items)
 // @namespace    akito
-// @version      2.2.0
+// @version      2.3.0
 // @description  Best Buy queue automation for saved items from the cart page
 // @author       akito#9528 / Albert Sun
 // @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
 // @downloadURL  https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
-// @require      file://C:/Projects/JavaScript/tamper-scripts/bestbuy-cart/user_interface.js
-// @require      file://C:/Projects/JavaScript/tamper-scripts/bestbuy-cart/utilities.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.3.0/bestbuy-cart/utilities.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.3.0/bestbuy-cart/user_interface.js
 // @require      https://code.jquery.com/jquery-2.2.3.min.js
 // @require      https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js
-// @resource css file://C:/Projects/JavaScript/tamper-scripts/bestbuy-cart/styling.css
+// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.3.0/bestbuy-cart/styling.css
 // @match        https://www.bestbuy.com/cart
 // @run-at       document-start
 // @grant        GM_getResourceText
@@ -24,7 +24,7 @@
 /* globals generateInterface, generateWindow, designateLogging, designateSettings */
 const j$ = $; // Just in case websites like replacing $ with some abomination
 
-const version = "2.2.0";
+const version = "2.3.0";
 const scriptName = "bestBuy-cartSavedItems"; // Key prefix for settings retrieval
 const scriptText = `Best Buy (Cart Saved Items) v${version} | Albert Sun / akito#9528`;
 const messageText = "Thank you and good luck! | https://github.com/albert-sun/tamper-scripts";
