@@ -25,7 +25,8 @@ A collection of miscellaneous Tampermonkey userscripts primarily centered around
 Best Buy | Cart Saved Items v2.2.0 - Improved user interface and minor bugfixes (honestly I've forgotten at this point)  
 Best Buy | Cart Saved items v2.3.0 - Fixed resource and auto-update links, added new copy button for logging window, and updated icons  
 Best Buy | Cart Saved Items v2.4.0 - Added cart auto page reload functionality and converted all images and audio to base64 to prevent hotlinking issues  
-Best Buy | Cart Saved Items v2.5.0 - Moved some stuff around and made auto-refresh earlier, hopefully makes it work properly for more people
+Best Buy | Cart Saved Items v2.5.0 - Moved some stuff around and made auto-refresh earlier, hopefully makes it work properly for more people  
+Best Buy | Cart Saved Items v2.5.1 - Fixed setting auto-reload to 0 causing infinite page refresh loop
 
 # Frequently Asked Questions
 **Q: Do scripts work on multiple / non-focused tabs?**  
