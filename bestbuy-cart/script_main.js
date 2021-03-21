@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy Automation (Cart Saved Items)
 // @namespace    akito
-// @version      2.5.1
+// @version      2.5.2
 // @description  Best Buy queue automation for saved items from the cart page
 // @author       akito#9528 / Albert Sun
 // @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
@@ -24,7 +24,7 @@
 /* globals generateInterface, generateWindow, designateLogging, designateSettings */
 const j$ = $; // Just in case websites like replacing $ with some abomination
 
-const version = "2.5.1";
+const version = "2.5.2";
 const scriptName = "bestBuy-cartSavedItems"; // Key prefix for settings retrieval
 const scriptText = `Best Buy (Cart Saved Items) v${version} | Albert Sun / akito#9528`;
 const messageText = "Thank you and good luck! | https://github.com/albert-sun/tamper-scripts";
@@ -36,7 +36,7 @@ const settings = {
     initialClick: { description: "Auto-Add Button Clicking", type: "boolean", value: true },
     colorInterval: { description: "Color Polling Interval (ms)", type: "number", value: 250 },
     loadUnloadInterval: { description: "Load/Unload Polling Interval (ms)", type: "number", value: 50 },
-    autoReloadInterval: { description: "Auto Page Reload Interval (ms, <1000 to disable)", type: "number", value: 0},
+    autoReloadInterval: { description: "Auto Page Reload Interval (ms, <10000 to disable)", type: "number", value: 0},
     errorResetDelay: { description: "Error Reset Delay (ms)", type: "number", value: 250 },
     cartCheckDelay: { description: "Cart Checking Delay (ms)", type: "number", value: 250 },
     cartSkipTimeout: { description: "Cart Skip Timeout (ms)", type: "number", value: 5000 },
@@ -156,6 +156,7 @@ async function resetSaved(skipUnload, fromCart) {
     // If addable, click the button (hopefully error element detector callback triggers)
     // If queued, store relevant info, initiate setInterval, and initiate edge detection
     let anyClicked = false;
+    const toQueue = []; // SKUs currently queued
     for(const index in savedButtons) {
         const button = savedButtons[index];
         const buttonColor = elementColor(button);
@@ -180,12 +181,7 @@ async function resetSaved(skipUnload, fromCart) {
             storage.buttons[sku] = button;
             storage.colors[sku] = "grey";
             storage.descriptions[sku] = savedDescriptions[index];
-
-            // Initiate periodic interval for updating element color
-            // Remember that intervals are cleared on each resetSaved call
-            storage.intervalIDs[sku] = setInterval(function() {
-                storage.colors[sku] = elementColor(storage.buttons[sku]);
-            }, settings.colorInterval.value);
+            toQueue.push(sku); // Add to list of currently queued
 
             // Initiate edge detection for callback color changes
             // I think it turns to white? Does it sometimes turn yellow as well?
@@ -196,6 +192,16 @@ async function resetSaved(skipUnload, fromCart) {
                 button.click();
             });
         }
+    }
+
+    // Initiate periodic interval for updating element colors
+    // Remember that intervals are cleared on each resetSaved call
+    if(toQueue.length !== 0) {
+        setInterval(function() {
+            for(const sku of toQueue) {
+                storage.colors[sku] = elementColor(storage.buttons[sku]);
+            }
+        }, settings.colorInterval.value);
     }
 
     // Force reload if any buttons are clicked to ensure status update
@@ -230,7 +236,7 @@ async function resetSaved(skipUnload, fromCart) {
 
     // Setup auto page refresh, not sure if zero value does anything
     // Perform first to reduce chances of not working when tab not focused
-    if(settings.autoReloadInterval.value > 1000) {
+    if(settings.autoReloadInterval.value > 10000) {
         setTimeout(function() {
             window.location.reload();
         }, settings.autoReloadInterval.value);
