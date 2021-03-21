@@ -138,7 +138,7 @@ function elementColor(element) {
     const matchedColor = colorText.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i); 
     parsedColor.r = Number(matchedColor[1]); parsedColor.g = Number(matchedColor[2]); parsedColor.b = Number(matchedColor[3]);
     const closest = {color: "", distance: 442}; // Default distance just slightly larger than max
-    for(checkColor of colors) {
+    for(const checkColor of colors) {
         const distance = Math.sqrt((parsedColor.r - checkColor.r) ** 2 + (parsedColor.g - checkColor.g) ** 2 + (parsedColor.b - checkColor.b));
         if(distance < closest.distance) {
             closest.color = checkColor.color;
