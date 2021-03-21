@@ -236,7 +236,7 @@ async function resetSaved(skipUnload, fromCart) {
 
     // Setup auto page refresh, not sure if zero value does anything
     // Perform first to reduce chances of not working when tab not focused
-    if(settings.autoReloadInterval.value > 10000) {
+    if(settings.autoReloadInterval.value >= 10000) {
         setTimeout(function() {
             window.location.reload();
         }, settings.autoReloadInterval.value);
