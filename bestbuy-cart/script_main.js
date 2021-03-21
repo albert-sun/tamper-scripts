@@ -85,12 +85,12 @@ async function loadInterface() {
     // Generate script footer and windows
     generateInterface(scriptText, messageText);
     const [settingsWindow, settingsDiv] = generateWindow(
-        "https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_settings_48px-512.png",
+        baseData.settingsIconData,
         "Settings (Updates on Refresh)", // Width height ignored because compatibility mode
         400, 400, true // Compatibility mode enabled
     );
     const [loggingWindow, loggingDiv] = generateWindow(
-        "https://cdn2.iconfinder.com/data/icons/font-awesome/1792/code-512.png",
+        baseData.loggingIconData,
         "Debug Logging", // Width height ignored because compatibility mode
         800, 400, true // Compatibility mode enabled
     );
