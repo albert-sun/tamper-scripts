@@ -47,9 +47,9 @@ function generateHeader(text) {
 // @param {number} width
 // @param {number} height
 // @param {boolean} compatibility
+// @returns {DOMElement} 
+// @returns {DOMElement}
 function generateWindow(iconURL, title, width, height, compatibility = false) {
-    console.log('generating window');
-
     // Check whether footer has even been initialized
     if(footer === undefined) {
         throw 'Footer has not been initialized yet!';
@@ -107,9 +107,9 @@ function generateWindow(iconURL, title, width, height, compatibility = false) {
         document.body.appendChild(thisWindow);
         j$(thisWindow).hide(); // Best Buy forcing me to initially hide?
         if(compatibility === false) { new SimpleBar(contentDiv); }
-    })
+    });
 
-    return contentDiv;
+    return [ thisWindow, contentDiv ];
 }
 
 // Generates page footer for script user interface (script info and other elements)
@@ -231,15 +231,32 @@ function designateSettings(contentDiv, settings) {
 // Designates div for logging and generates table appending function
 // @param {DOMElement} contentDiv
 // @returns {function}
-function designateLogging(contentDiv) {
-    // Generate wrapper table element
+function designateLogging(window, contentDiv) {
+    // Initialize wrapper table element
     const loggingTable = document.createElement("table");
     contentDiv.appendChild(loggingTable);
     loggingTable.classList.add("akito-table");
 
+    // Initialize wrapper copy button div
+    const copyDiv = document.createElement("div");
+    copyDiv.classList.add("akito-copyDiv");
+    window.appendChild(copyDiv);
+
+    // Initialize copy button element
+    const copyClick = document.createElement("a");
+    copyClick.classList.add("akito-copyClick");
+    copyClick.href = "#";
+    copyDiv.appendChild(copyClick);
+
+    // Initialize icon for logging copy button
+    const copyImage = document.createElement("img");
+    copyImage.classList.add("akito-copyImage");
+    copyClick.appendChild(copyImage);
+    copyImage.src = "https://image.flaticon.com/icons/png/512/88/88026.png";
+
     // Generates timestamp and appends to logging table
     // @param {string} message
-    return function(message) {
+    const loggingFunction = function(message) {
         const row = document.createElement("tr");
 
         // Generate timestamp cell
@@ -251,4 +268,17 @@ function designateLogging(contentDiv) {
 
         loggingTable.insertBefore(row, loggingTable.firstChild);
     }
+
+    // Setup copy function (logs as well)
+    copyClick.onclick = function() { 
+        let copyString = "";
+        for(const row of loggingTable.childNodes) {
+            copyString += row.innerText + "\n";
+        }
+        GM_setClipboard(copyString);
+
+        loggingFunction("Copied debug logs to clipboard");
+    };
+
+    return loggingFunction;
 }
