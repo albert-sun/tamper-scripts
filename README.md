@@ -1,5 +1,5 @@
 # Miscellaneous Tampermonkey Automation Userscripts  
-{ [Installation](<https://github.com/albert-sun/tamper-scripts#Installation>) | [Current Scripts](<https://github.com/albert-sun/tamper-scripts#Current-Scripts>) | [Frequently Asked Question](<https://github.com/albert-sun/tamper-scripts#Frequently-Asked-Questions>) | [Notes](<https://github.com/albert-sun/tamper-scripts#Notes>) }
+{ [Installation](<https://github.com/albert-sun/tamper-scripts#Installation>) | [Current Scripts](<https://github.com/albert-sun/tamper-scripts#Current-Scripts>) | [Changelog](<https://github.com/albert-sun/tamper-scripts#Changelog>) | [Frequently Asked Question](<https://github.com/albert-sun/tamper-scripts#Frequently-Asked-Questions>) | [Notes](<https://github.com/albert-sun/tamper-scripts#Notes>) }
 
 A collection of miscellaneous Tampermonkey userscripts primarily centered around automation and convenience. All scripts come with a convenient user interface for settings, logging, and other functionality. For script support, please provide me with the script used, version, page URL, logging output (if applicable), and detailed description of the issue.
 
@@ -17,9 +17,14 @@ A collection of miscellaneous Tampermonkey userscripts primarily centered around
 4. The script will automatically update itself and external dependencies. Verify that the script is working properly by navigating to a script-enabled page and checking for the red-orange footer.
 
 # Current Scripts
-|Script|Latest Version|Page Scope|Features|
+|Script|Versions|Page Scope|Features|
 |----------------|:------------:|------------------------|--------|
-|Cart Saved items|[2.2.0](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.2.0/bestbuy-cart/script_main.js)<br>[2.3.0](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.3.0/bestbuy-cart/script_main.js)|Cart page|<ul><li>Simple adblock detection and notification (having adblock sometimes messes with website functionality)<li>Automatic interval page reloading for refreshing availability on sold out or unavailable products</li><li>Keyword whitelist and blacklist for processing saved items (note that bundles aren't shown on the cart saved items display)</li></li>Automatic button clicking for initially entering product queue and when queue pops, along with audio notification whenever item is successfully added to cart</li></ul>|
+|Best Buy<br><br>Cart Saved items|[2.2.0](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.2.0/bestbuy-cart/script_main.js)<br>[2.3.0](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.3.0/bestbuy-cart/script_main.js)<br>[2.4.0](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.4.0/bestbuy-cart/script_main.js)|Cart page|<ul><li>Simple adblock detection and notification (having adblock sometimes messes with website functionality)<li>Automatic interval page reloading for refreshing availability on sold out or unavailable products</li><li>Keyword whitelist and blacklist for processing saved items (note that bundles aren't shown on the cart saved items display)</li></li>Automatic button clicking for initially entering product queue and when queue pops, along with audio notification whenever item is successfully added to cart</li></ul>|
+
+# Changelog
+Best Buy | Cart Saved Items v2.2.0 - Improved user interface and minor bugfixes (honestly I've forgotten at this point)  
+Best Buy | Cart Saved items v2.3.0 - Fixed resource and auto-update links, added new copy button for logging window, and updated icons  
+Best Buy | Cart Saved Items v2.4.0 - Added cart auto page reload functionality and converted all images and audio to base64 to prevent hotlinking issues  
 
 # Frequently Asked Questions
 **Q: Do scripts work on multiple / non-focused tabs?**  
