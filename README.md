@@ -19,7 +19,7 @@ A collection of miscellaneous Tampermonkey userscripts primarily centered around
 # Current Scripts
 |Script|Latest Version|Page Scope|Features|
 |----------------|:------------:|------------------------|--------|
-|[Cart Saved Items](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.2.0/bestbuy-cart/script_main.js)|2.1.0|Cart page|<ul><li>Simple adblock detection and notification (having adblock sometimes messes with website functionality)<li>Automatic interval page reloading for refreshing availability on sold out or unavailable products</li><li>Keyword whitelist and blacklist for processing saved items (note that bundles aren't shown on the cart saved items display)</li></li>Automatic button clicking for initially entering product queue and when queue pops, along with audio notification whenever item is successfully added to cart</li></ul>|
+|Cart Saved items|[2.2.0](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.2.0/bestbuy-cart/script_main.js)<br>[2.3.0](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.3.0/bestbuy-cart/script_main.js)|Cart page|<ul><li>Simple adblock detection and notification (having adblock sometimes messes with website functionality)<li>Automatic interval page reloading for refreshing availability on sold out or unavailable products</li><li>Keyword whitelist and blacklist for processing saved items (note that bundles aren't shown on the cart saved items display)</li></li>Automatic button clicking for initially entering product queue and when queue pops, along with audio notification whenever item is successfully added to cart</li></ul>|
 
 # Frequently Asked Questions
 **Q: Do scripts work on multiple / non-focused tabs?**  
