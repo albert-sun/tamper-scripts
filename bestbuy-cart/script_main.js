@@ -1,16 +1,16 @@
 // ==UserScript==
 // @name         Best Buy Automation (Cart Saved Items)
 // @namespace    akito
-// @version      2.4.0
+// @version      2.5.0
 // @description  Best Buy queue automation for saved items from the cart page
 // @author       akito#9528 / Albert Sun
 // @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
 // @downloadURL  https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
-// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.4.0/bestbuy-cart/utilities.js
-// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.4.0/bestbuy-cart/user_interface.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.5/bestbuy-cart/utilities.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.5/bestbuy-cart/user_interface.js
 // @require      https://code.jquery.com/jquery-2.2.3.min.js
 // @require      https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js
-// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.4.0/bestbuy-cart/styling.css
+// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.5/bestbuy-cart/styling.css
 // @match        https://www.bestbuy.com/cart
 // @run-at       document-start
 // @grant        GM_getResourceText
@@ -24,7 +24,7 @@
 /* globals generateInterface, generateWindow, designateLogging, designateSettings */
 const j$ = $; // Just in case websites like replacing $ with some abomination
 
-const version = "2.4.0";
+const version = "2.5.0";
 const scriptName = "bestBuy-cartSavedItems"; // Key prefix for settings retrieval
 const scriptText = `Best Buy (Cart Saved Items) v${version} | Albert Sun / akito#9528`;
 const messageText = "Thank you and good luck! | https://github.com/albert-sun/tamper-scripts";
@@ -61,27 +61,6 @@ let loggingFunction = undefined; // Leave for "global" logging usage by script a
 // Also generates and sets debug logging function for script-wide usage
 // @returns {function}
 async function loadInterface() {
-    // Load SimpleBar and script-wide CSS
-    GM_addStyle(GM_getResourceText("css"));
-
-    // Load script settings from Tampermonkey storage
-    for(const property in settings) {
-        const lookupKey = `${scriptName}_${property}`;
-        const storageValue = await GM_getValue(lookupKey, settings[property].value);
-
-        // Attach setter to settings to save any changes
-        // Inconvenient because it requires separate property for each child...
-        settings[property]._value = storageValue;
-        delete settings[property].value;
-        Object.defineProperty(settings[property], "value", {
-            get: function() { return settings[property]._value; },
-            set: function(value) {
-                settings[property]._value = value;
-                GM_setValue(lookupKey, value);
-            }
-        });
-    }
-
     // Generate script footer and windows
     generateInterface(scriptText, messageText);
     const [settingsWindow, settingsDiv] = generateWindow(
@@ -228,6 +207,35 @@ async function resetSaved(skipUnload, fromCart) {
 (async function() {
     'use strict';
 
+    // Load SimpleBar and script-wide CSS
+    GM_addStyle(GM_getResourceText("css"));
+
+    // Load script settings from Tampermonkey storage
+    for(const property in settings) {
+        const lookupKey = `${scriptName}_${property}`;
+        const storageValue = await GM_getValue(lookupKey, settings[property].value);
+
+        // Attach setter to settings to save any changes
+        // Inconvenient because it requires separate property for each child...
+        settings[property]._value = storageValue;
+        delete settings[property].value;
+        Object.defineProperty(settings[property], "value", {
+            get: function() { return settings[property]._value; },
+            set: function(value) {
+                settings[property]._value = value;
+                GM_setValue(lookupKey, value);
+            }
+        });
+    }
+
+    // Setup auto page refresh, not sure if zero value does anything
+    // Perform first to reduce chances of not working when tab not focused
+    if(settings.autoReloadInterval.value !== 0) {
+        setTimeout(function() {
+            window.location.reload();
+        }, settings.autoReloadInterval.value);
+    }
+
     // Load user interface including footer and windows
     loggingFunction = await loadInterface();
 
@@ -266,16 +274,6 @@ async function resetSaved(skipUnload, fromCart) {
         // window.cart extraordinarily slippery, unable to hook getters/setters or anything
         // Currently triggers on picking/shipping swaps but don't want custom callback function...
         callbackObject(__META_LAYER_META_DATA, "order", function() { resetSaved(false, true) }, "set");
-
-        // Setup auto page refresh, not sure if zero value does anything
-        if(settings.autoReloadInterval.value !== 0) {
-            loggingFunction("Initializing auto page refresh interval from settings");
-
-            setTimeout(function() {
-                loggingFunction("Page refresh interval elapsed, auto refreshing");
-                window.location.reload();
-            }, settings.autoReloadInterval.value);
-        }
     });
 }());
 
