@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy Automation (Cart Saved Items)
 // @namespace    akito
-// @version      2.5.2
+// @version      2.5.3
 // @description  Best Buy queue automation for saved items from the cart page
 // @author       akito#9528 / Albert Sun
 // @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
@@ -20,11 +20,12 @@
 // @grant        GM_setClipboard
 // @grant        unsafeWindow
 // ==/UserScript==
-/* globals $, callbackArray, callbackObject, checkBlackWhitelist, edgeDetect, elementColor */
+/* globals $, baseData, callbackArray, callbackObject, checkBlackWhitelist, edgeDetect, elementColor */
 /* globals generateInterface, generateWindow, designateLogging, designateSettings */
+/* globals __META_LAYER_META_DATA */
 const j$ = $; // Just in case websites like replacing $ with some abomination
 
-const version = "2.5.2";
+const version = "2.5.3";
 const scriptName = "bestBuy-cartSavedItems"; // Key prefix for settings retrieval
 const scriptText = `Best Buy (Cart Saved Items) v${version} | Albert Sun / akito#9528`;
 const messageText = "Thank you and good luck! | https://github.com/albert-sun/tamper-scripts";
@@ -32,7 +33,6 @@ const messageText = "Thank you and good luck! | https://github.com/albert-sun/ta
 // Script-specific settings, please don't modify as it probably won't do anything!
 // Instead, use the settings user interface implemented within the script itself.
 const settings = {
-    checkAdblock: { description: "Primitive Adblock Check", type: "boolean", value: true },
     initialClick: { description: "Auto-Add Button Clicking", type: "boolean", value: true },
     colorInterval: { description: "Color Polling Interval (ms)", type: "number", value: 250 },
     loadUnloadInterval: { description: "Load/Unload Polling Interval (ms)", type: "number", value: 50 },
@@ -41,20 +41,16 @@ const settings = {
     cartCheckDelay: { description: "Cart Checking Delay (ms)", type: "number", value: 250 },
     cartSkipTimeout: { description: "Cart Skip Timeout (ms)", type: "number", value: 5000 },
 };
+
+const audio = new Audio(baseData.notificationSoundData);
 const storage = {
     buttons: {}, // SKU -> add button elements
     colors: {}, // SKU -> current button color
     descriptions: {}, // SKU -> product description
-    intervalIDs: {}, // SKU -> setInterval IDs
+    interval: undefined, // singular color interval
 }; // Dedicated storage variable for script usage
-const adblockURLs = [
-    "https://pubads.g.doubleclick.net/ssai/event/",
-    "https://googleads.g.doubleclick.net/pagead/html/",
-    "https://online-metrix.net/",
-]; // Test request URLs for detecting adblock status
 const keyWhitelist = ["3060", "3070", "3080", "3090", "6700", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PS5"];
 const keyBlacklist = []; // Temporary, blacklist > whitelist
-const audio = new Audio("https://github.com/albert-sun/tamper-scripts/blob/main/notification.mp3?raw=true");
 let loggingFunction = undefined; // Leave for "global" logging usage by script and requirements
 
 // Load script user interface consisting of footer and individual windows
@@ -92,15 +88,12 @@ async function resetSaved(skipUnload, fromCart) {
     loggingFunction(`Saved elements reset triggered from ${fromCart === true ? "non-" : ""}cart source`);
     loggingFunction("Clearing existing color polling intervals and temporary storage");
 
-    // Clear existing queue polling intervals
-    // Then, clear storage attributes by resetting to empty object
-    for(const sku in storage.intervalIDs) {
-        clearInterval(storage.intervalIDs[sku]);
-    }
+    // Clear color polling interval and existing storage objects
+    clearInterval(storage.interval);
     storage.buttons = {};
     storage.colors = {};
     storage.descriptions = {};
-    storage.intervalIDs = {};
+    storage.interval = undefined;
 
     // Periodically poll until saved items unload and reload
     let savedWrappersRes;
@@ -194,19 +187,17 @@ async function resetSaved(skipUnload, fromCart) {
         }
     }
 
-    // Initiate periodic interval for updating element colors
+    // Force reload if any buttons are clicked to ensure status update
+    // Else, initiate periodic interval for updating element colors
     // Remember that intervals are cleared on each resetSaved call
-    if(toQueue.length !== 0) {
-        setInterval(function() {
+    if(anyClicked === true) {
+        location.reload();
+    } else if(toQueue.length !== 0) {
+        storage.interval = setInterval(function() {
             for(const sku of toQueue) {
                 storage.colors[sku] = elementColor(storage.buttons[sku]);
             }
         }, settings.colorInterval.value);
-    }
-
-    // Force reload if any buttons are clicked to ensure status update
-    if(anyClicked === true) {
-        location.reload();
     }
 }
 
@@ -245,21 +236,6 @@ async function resetSaved(skipUnload, fromCart) {
     // Load user interface including footer and windows
     loggingFunction = await loadInterface();
 
-    // Primitive adblock check: check for failure when fetching commonly blocked domains
-    let adblockDetected = undefined;
-    if(settings.checkAdblock.value === true) {
-        const promises = adblockURLs.map(url => fetch(url));
-        const results = await Promise.allSettled(promises);
-        const failed = results.filter(x => x.status !== "fulfilled");
-        adblockDetected = failed.length > 0;
-
-        if(adblockDetected === true) {
-            loggingFunction("/!\\ Adblock detected, please disable for maximum website compatibility");
-        } else {
-            loggingFunction("Adblock checking finished, none detected");
-        }
-    }
-
     addEventListener('DOMContentLoaded', async function() {
         loggingFunction("Initializing callback to saved items reset on error message detection");
 
@@ -287,7 +263,6 @@ async function resetSaved(skipUnload, fromCart) {
 == Current Bugs ==
 - Must reload page sometimes after clicking initial add because no "Please Wait" transition
 == Current Testing Checklist ==
-[X] Adblock detection user notification
 [ ] Error message element DOM insert callback
 [X] Cart addition / removal (/ fulfillment swap) callback
 [X] Correct whitelist and blacklist keyword product filtering and splicing
