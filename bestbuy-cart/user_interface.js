@@ -213,7 +213,7 @@ function designateSettings(contentDiv, settings) {
                     setting.value = checkbox.checked;
                 };
                 break;
-            case "number": // Numerical slider input + display
+            case "number": // Numerical text input
                 const numberInput = document.createElement("input");
                 numberInput.classList.add("akito-black");
                 settingCell.appendChild(numberInput);
@@ -221,6 +221,15 @@ function designateSettings(contentDiv, settings) {
                 numberInput.value = setting.value;
                 j$(numberInput).change(function() {
                     setting.value = numberInput.value;
+                });
+                break;
+            case "string": // String text input 
+                const stringInput = document.createElement("input");
+                stringInput.classList.add("akito-black");
+                settingCell.appendChild(stringInput);
+                stringInput.value = setting.value;
+                j$(stringInput).change(function() {
+                    setting.value = stringInput.value;
                 });
                 break;
             case "array": break; // Currently not implemented
@@ -264,7 +273,7 @@ function designateLogging(window, contentDiv) {
         const loggingCell = document.createElement("td");
         loggingCell.classList.add("akito-black");
         row.appendChild(loggingCell);
-        loggingCell.innerHTML= `<b style="font-weight:bold !important">${timestamp}</b> ${message}`;
+        loggingCell.innerHTML= `<strong style="font-weight:bold !important">${timestamp}</strong> ${message}`;
 
         loggingTable.insertBefore(row, loggingTable.firstChild);
     }

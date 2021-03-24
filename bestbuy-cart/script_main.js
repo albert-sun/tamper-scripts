@@ -1,16 +1,16 @@
 // ==UserScript==
 // @name         Best Buy Automation (Cart Saved Items)
 // @namespace    akito
-// @version      2.5.3
+// @version      2.6.0
 // @description  Best Buy queue automation for saved items from the cart page
 // @author       akito#9528 / Albert Sun
 // @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
 // @downloadURL  https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
-// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.5/bestbuy-cart/utilities.js
-// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.5/bestbuy-cart/user_interface.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.6/bestbuy-cart/utilities.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.6/bestbuy-cart/user_interface.js
 // @require      https://code.jquery.com/jquery-2.2.3.min.js
 // @require      https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js
-// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.5/bestbuy-cart/styling.css
+// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.6/bestbuy-cart/styling.css
 // @match        https://www.bestbuy.com/cart
 // @run-at       document-start
 // @grant        GM_getResourceText
@@ -25,7 +25,7 @@
 /* globals __META_LAYER_META_DATA */
 const j$ = $; // Just in case websites like replacing $ with some abomination
 
-const version = "2.5.3";
+const version = "2.6.0";
 const scriptName = "bestBuy-cartSavedItems"; // Key prefix for settings retrieval
 const scriptText = `Best Buy (Cart Saved Items) v${version} | Albert Sun / akito#9528`;
 const messageText = "Thank you and good luck! | https://github.com/albert-sun/tamper-scripts";
@@ -34,12 +34,14 @@ const messageText = "Thank you and good luck! | https://github.com/albert-sun/ta
 // Instead, use the settings user interface implemented within the script itself.
 const settings = {
     initialClick: { description: "Auto-Add Button Clicking", type: "boolean", value: true },
+    autoReloadInterval: { description: "Auto Page Reload Interval (ms, <10000 to disable)", type: "number", value: 0},
     colorInterval: { description: "Color Polling Interval (ms)", type: "number", value: 250 },
     loadUnloadInterval: { description: "Load/Unload Polling Interval (ms)", type: "number", value: 50 },
-    autoReloadInterval: { description: "Auto Page Reload Interval (ms, <10000 to disable)", type: "number", value: 0},
-    errorResetDelay: { description: "Error Reset Delay (ms)", type: "number", value: 250 },
     cartCheckDelay: { description: "Cart Checking Delay (ms)", type: "number", value: 250 },
+    errorResetDelay: { description: "Error Reset Delay (ms)", type: "number", value: 250 },
     cartSkipTimeout: { description: "Cart Skip Timeout (ms)", type: "number", value: 5000 },
+    blacklistString: { description: "Blacklist Keywords (Array)", type: "string", value: `[]`},
+    whitelistString: { description: "Whitelist Keywords (Array)", type: "string", value: `["3060", "3070", "3080", "3090", "6700", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PS5"]`},
 };
 
 const audio = new Audio(baseData.notificationSoundData);
@@ -49,8 +51,8 @@ const storage = {
     descriptions: {}, // SKU -> product description
     interval: undefined, // singular color interval
 }; // Dedicated storage variable for script usage
-const keyWhitelist = ["3060", "3070", "3080", "3090", "6700", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PS5"];
-const keyBlacklist = []; // Temporary, blacklist > whitelist
+let keyWhitelist = [];
+let keyBlacklist = []; // Temporary, blacklist > whitelist
 let loggingFunction = undefined; // Leave for "global" logging usage by script and requirements
 
 // Load script user interface consisting of footer and individual windows
@@ -75,6 +77,10 @@ async function loadInterface() {
     const logFunc = designateLogging(loggingWindow, loggingDiv);
 
     logFunc("Finished initializing script user interface including footer and windows");
+
+    // Set keyword blacklist and whitelist, log if invalid
+    try { keyBlacklist = JSON.parse(settings.blacklistString.value) } catch(_) { logFunc(`/!\\ Error parsing keyword blacklist array from settings`); }
+    try { keyWhitelist = JSON.parse(settings.whitelistString.value) } catch(_) { logFunc(`/!\\ Error parsing keyword whitelist array from settings`); }
 
     return logFunc;
 }
@@ -181,23 +187,24 @@ async function resetSaved(skipUnload, fromCart) {
             edgeDetect(storage.colors, sku, "grey", ["white", "yellow"], function() {
                 loggingFunction(`Color transition detected for [${description}], playing audio and clicking button`);
 
-                audio.play();
                 button.click();
             });
         }
     }
 
-    // Force reload if any buttons are clicked to ensure status update
-    // Else, initiate periodic interval for updating element colors
+    // Initiate periodic interval for updating element colors
     // Remember that intervals are cleared on each resetSaved call
-    if(anyClicked === true) {
-        location.reload();
-    } else if(toQueue.length !== 0) {
+    if(toQueue.length !== 0) {
         storage.interval = setInterval(function() {
             for(const sku of toQueue) {
                 storage.colors[sku] = elementColor(storage.buttons[sku]);
             }
         }, settings.colorInterval.value);
+    }
+
+    // Force reload if any buttons are clicked to ensure status update
+    if(anyClicked === true) {
+        location.reload();
     }
 }
 
@@ -255,7 +262,13 @@ async function resetSaved(skipUnload, fromCart) {
         // Force refresh of saved item elements whenever order summary changes (cart addition / removal?)
         // window.cart extraordinarily slippery, unable to hook getters/setters or anything
         // Currently triggers on picking/shipping swaps but don't want custom callback function...
-        callbackObject(__META_LAYER_META_DATA, "order", function() { resetSaved(false, true) }, "set");
+        callbackObject(__META_LAYER_META_DATA, "order", async function(old, current) {
+            // Play audio if added to cart (applies to both normal and queue items)
+            if(current.lineItems.length > old.lineItems.length) {
+                audio.play();
+            }
+            resetSaved(false, true);
+        }, "set");
     });
 }());
 
