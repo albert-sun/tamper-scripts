@@ -19,15 +19,15 @@ A collection of miscellaneous Tampermonkey userscripts primarily centered around
 # Current Scripts
 |Script|Versions|Page Scope|Features|
 |----------------|:------------:|------------------------|--------|
-|Best Buy<br><br>Cart Saved items|[2.3.0](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.3.0/bestbuy-cart/script_main.js)<br>[2.4.0](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.4.0/bestbuy-cart/script_main.js)<br>[2.5.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.5/bestbuy-cart/script_main.js)|Cart page|<ul><li>Simple adblock detection and notification (having adblock sometimes messes with website functionality)<li>Automatic interval page reloading for refreshing availability on sold out or unavailable products</li><li>Keyword whitelist and blacklist for processing saved items (note that bundles aren't shown on the cart saved items display)</li></li>Automatic button clicking for initially entering product queue and when queue pops, along with audio notification whenever item is successfully added to cart</li></ul>|
+|Best Buy<br><br>Cart Saved items|[2.4.0](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.4.0/bestbuy-cart/script_main.js)<br>[2.5.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.5/bestbuy-cart/script_main.js)<br>[2.6.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.6/bestbuy-cart/script_main.js)|Cart page|<ul><li>Simple adblock detection and notification (having adblock sometimes messes with website functionality)<li>Automatic interval page reloading for refreshing availability on sold out or unavailable products</li><li>Keyword whitelist and blacklist for processing saved items (note that bundles aren't shown on the cart saved items display)</li></li>Automatic button clicking for initially entering product queue and when queue pops, along with audio notification whenever item is successfully added to cart</li></ul>|
 
 # Changelog
-Best Buy | Cart Saved Items v2.2.0 - Improved user interface and minor bugfixes (honestly I've forgotten at this point)  
-Best Buy | Cart Saved items v2.3.0 - Fixed resource and auto-update links, added new copy button for logging window, and updated icons  
+Best Buy | Cart Saved Items v2.3.0 - Fixed resource and auto-update links, added new copy button for logging window, and updated icons  
 Best Buy | Cart Saved Items v2.4.0 - Added cart auto page reload functionality and converted all images and audio to base64 to prevent hotlinking issues  
 Best Buy | Cart Saved Items v2.5.0 - Moved some stuff around and made auto-refresh earlier, hopefully makes it work properly for more people  
 Best Buy | Cart Saved Items v2.5.1 - Fixed setting auto-reload to 0 causing infinite page refresh loop  
 Best Buy | Cart Saved Items v2.5.2 - Reduced number of color polling intervals from N to 1, hopefully helps with background timers
+Best Buy | Cart Saved Items v2.6.0 - Removed adblock functionality, added blacklist and whitelist keyword setting, and fixed color interval leaking
 
 # Frequently Asked Questions
 **Q: Do scripts work on multiple / non-focused tabs?**  
