@@ -1,18 +1,19 @@
 // Calls a given callback whenever the array is modified through Proxies.
-// Supports calling back from both get and set (through weird runtime variable check)
+// Supports calling back from both get and set (through weird runtime variable check) with old and current values.
 // @param {array} array
 // @param {function} callback
 // @returns {Proxy (array wrapper)}
 function callbackArray(array, callback, getSet) {
     return new Proxy(array, {
         get: function(target, property) {
-            if(getSet.includes("get")) { callback(); }
+            if(getSet.includes("get")) { callback(target[property]); }
 
             return target[property];
         },
         set: function(target, property, value) {
+            const old = target[property];
             target[property] = value;
-            if(getSet.includes("set")) { callback(); }
+            if(getSet.includes("set")) { callback(old, target[property]); }
 
             return true;
         }
@@ -21,7 +22,7 @@ function callbackArray(array, callback, getSet) {
 
 // Calls a given callback whenever the given object property is set through getters and setters.
 // Existing property will be stored within alternate property (prefixed by _), no guaranteess through.
-// Supports calling back from both get and set (using includes instead of case matching)
+// Supports calling back from both get and set (using includes instead of case matching) with old and current values.
 // @param obj
 // @param {string} property
 // @param {function} callback
@@ -34,7 +35,7 @@ function callbackObject(obj, property, callback, getSet) {
             configurable: true,
             get: function() { 
                 loggingFunction(`Get callback triggered for property ${property}`);
-                callback(); // Can be async function
+                callback(obj[altProperty]); // Can be async function
 
                 return obj[altProperty];
             },
@@ -46,10 +47,11 @@ function callbackObject(obj, property, callback, getSet) {
             configurable: true,
             get: function() { return obj[altProperty]; },
             set: function(value) {
+                const old = obj[altProperty];
                 obj[altProperty] = value;
 
                 loggingFunction(`Set callback triggered for property ${property}`);
-                callback(); // Can be async function
+                callback(old, value); // Can be async function
             }
         });
     }
