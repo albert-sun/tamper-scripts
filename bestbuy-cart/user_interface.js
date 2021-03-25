@@ -200,6 +200,7 @@ function designateSettings(contentDiv, settings) {
         // Currently no support for arrays because they're complicated
         const settingCell = document.createElement("td");
         settingCell.classList.add("akito-black");
+        settingCell.classList.add("akito-tableCell");
         row.appendChild(settingCell);
         settingCell.style.align = "center";
         switch(setting.type) {
@@ -272,6 +273,7 @@ function designateLogging(window, contentDiv) {
         const timestamp = "[" + (new Date()).toTimeString().split(' ')[0] + "]";
         const loggingCell = document.createElement("td");
         loggingCell.classList.add("akito-black");
+        loggingCell.classList.add("akito-tableCell");
         row.appendChild(loggingCell);
         loggingCell.innerHTML= `<strong style="font-weight:bold !important">${timestamp}</strong> ${message}`;
 

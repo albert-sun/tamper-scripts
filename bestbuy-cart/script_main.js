@@ -33,15 +33,16 @@ const messageText = "Thank you and good luck! | https://github.com/albert-sun/ta
 // Script-specific settings, please don't modify as it probably won't do anything!
 // Instead, use the settings user interface implemented within the script itself.
 const settings = {
-    initialClick: { description: "Auto-Add Button Clicking", type: "boolean", value: true },
-    autoReloadInterval: { description: "Auto Page Reload Interval (ms, <10000 to disable)", type: "number", value: 0},
-    colorInterval: { description: "Color Polling Interval (ms)", type: "number", value: 250 },
-    loadUnloadInterval: { description: "Load/Unload Polling Interval (ms)", type: "number", value: 50 },
-    cartCheckDelay: { description: "Cart Checking Delay (ms)", type: "number", value: 250 },
-    errorResetDelay: { description: "Error Reset Delay (ms)", type: "number", value: 250 },
-    cartSkipTimeout: { description: "Cart Skip Timeout (ms)", type: "number", value: 5000 },
-    blacklistString: { description: "Blacklist Keywords (Array)", type: "string", value: `[]`},
-    whitelistString: { description: "Whitelist Keywords (Array)", type: "string", value: `["3060", "3070", "3080", "3090", "6700", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PS5"]`},
+    initialClick: { description: "Auto-click whitelisted product add buttons?", type: "boolean", value: true },
+    reloadClicked: { description: "Refresh page after auto-clicking add buttons?", type: "boolean", value: false },
+    autoReloadInterval: { description: "Auto page refresh interval (in ms, <10000 to disable)", type: "number", value: 0},
+    colorInterval: { description: "Interval between polling button color changes (ms)", type: "number", value: 250 },
+    loadUnloadInterval: { description: "Interval between polling element load and unloads (ms)", type: "number", value: 50 },
+    cartCheckDelay: { description: "Load/unload delay when modifying cart (ms)", type: "number", value: 250 },
+    errorResetDelay: { description: "Load/unload delay after error message (ms)", type: "number", value: 250 },
+    cartSkipTimeout: { description: "Timeout to skip when polling load/unload (ms)", type: "number", value: 5000 },
+    blacklistString: { description: "Blacklisted product keywords (array format)", type: "string", value: `[]`},
+    whitelistString: { description: "Whitelisted product keywords (array format)", type: "string", value: `["3060", "3070", "3080", "3090", "6700", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PS5"]`},
 };
 
 const audio = new Audio(baseData.notificationSoundData);
@@ -103,7 +104,6 @@ async function resetSaved(skipUnload, fromCart) {
 
     // Periodically poll until saved items unload and reload
     let savedWrappersRes;
-    if(fromCart) { await new Promise(r => setTimeout(r, settings.cartCheckDelay.value)); } // Extra wait, for cart or something idek anymore
     if($(".removed-item-info__wrapper")[0] === undefined || skipUnload === true) { // Wait instead of polling for removed
         loggingFunction("Waiting for saved item elements to unload from DOM");
 
@@ -162,12 +162,16 @@ async function resetSaved(skipUnload, fromCart) {
         const description = savedDescriptions[index];
         const available = !button.classList.contains("disabled");
         if((buttonColor === "white" || buttonColor === "blue") && settings.initialClick.value) { // Addable, should be available?
-            loggingFunction(`[${description}] cart addable, clicking and refreshing after products iteration finished`);
+            if(settings.reloadClicked.value === true) {
+                loggingFunction(`[${description}] cart addable, clicking and refreshing after products iteration finished`);
+            } else {
+                loggingFunction(`[${description}] cart addable, auto-clicking (should either add to cart or queue)`)
+            }
 
             button.click();
             anyClicked = true;
         } else if(buttonColor === "grey" && available === true) { // Currently queued
-            if(anyClicked === true) {
+            if(anyClicked === true && settings.reloadClicked.value === true) {
                 loggingFunction(`[${description}] currently queued, not initializing color polling interval per pending refresh`);
 
                 continue;
@@ -203,7 +207,7 @@ async function resetSaved(skipUnload, fromCart) {
     }
 
     // Force reload if any buttons are clicked to ensure status update
-    if(anyClicked === true) {
+    if(anyClicked === true && settings.reloadClicked.value === true) {
         location.reload();
     }
 }
@@ -267,6 +271,7 @@ async function resetSaved(skipUnload, fromCart) {
             if(current.lineItems.length > old.lineItems.length) {
                 audio.play();
             }
+            await new Promise(r => setTimeout(r, settings.cartCheckDelay.value));
             resetSaved(false, true);
         }, "set");
     });

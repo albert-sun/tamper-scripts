@@ -338,6 +338,10 @@
   font-size: 14px;
 }
 
+.akito-tableCell {
+  height: 30px !important;
+}
+
 .akito-black {
   color: black;
 }
