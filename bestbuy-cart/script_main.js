@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy Automation (Cart Saved Items)
 // @namespace    akito
-// @version      2.6.0
+// @version      2.6.1
 // @description  Best Buy queue automation for saved items from the cart page
 // @author       akito#9528 / Albert Sun
 // @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
@@ -25,7 +25,7 @@
 /* globals __META_LAYER_META_DATA */
 const j$ = $; // Just in case websites like replacing $ with some abomination
 
-const version = "2.6.0";
+const version = "2.6.1";
 const scriptName = "bestBuy-cartSavedItems"; // Key prefix for settings retrieval
 const scriptText = `Best Buy (Cart Saved Items) v${version} | Albert Sun / akito#9528`;
 const messageText = "Thank you and good luck! | https://github.com/albert-sun/tamper-scripts";
