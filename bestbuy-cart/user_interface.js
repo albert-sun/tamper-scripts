@@ -273,7 +273,6 @@ function designateLogging(window, contentDiv) {
         const timestamp = "[" + (new Date()).toTimeString().split(' ')[0] + "]";
         const loggingCell = document.createElement("td");
         loggingCell.classList.add("akito-black");
-        loggingCell.classList.add("akito-tableCell");
         row.appendChild(loggingCell);
         loggingCell.innerHTML= `<strong style="font-weight:bold !important">${timestamp}</strong> ${message}`;
 
