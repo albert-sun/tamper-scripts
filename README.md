@@ -25,7 +25,7 @@ A collection of miscellaneous Tampermonkey userscripts primarily centered around
 Best Buy | Cart Saved Items v2.4.0 - Added cart auto page reload functionality and converted all images and audio to base64 to prevent hotlinking issues  
 Best Buy | Cart Saved Items v2.5.0 - Moved some stuff around and made auto-refresh earlier, hopefully makes it work properly for more people  
 Best Buy | Cart Saved Items v2.5.1 - Fixed setting auto-reload to 0 causing infinite page refresh loop  
-Best Buy | Cart Saved Items v2.5.2 - Reduced number of color polling intervals from N to 1, hopefully helps with background timers
+Best Buy | Cart Saved Items v2.5.2 - Reduced number of color polling intervals from N to 1, hopefully helps with background timers  
 Best Buy | Cart Saved Items v2.6.0 - Removed adblock functionality, added blacklist and whitelist keyword setting, and fixed color interval leaking  
 Best Buy | Cart Saved Items v2.6.0 - Added setting for controlling page auto-refreshing after initial add button click and modified table CSS (more consistent?)  
 
