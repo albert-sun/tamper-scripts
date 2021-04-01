@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy Automation (Cart Saved Items)
 // @namespace    akito
-// @version      2.6.1
+// @version      2.6.2
 // @description  Best Buy queue automation for saved items from the cart page
 // @author       akito#9528 / Albert Sun
 // @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
@@ -12,6 +12,7 @@
 // @require      https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js
 // @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.6/bestbuy-cart/styling.css
 // @match        https://www.bestbuy.com/cart
+// @match        https://www.bestbuy.com/site/customer/lists/manage/saveditems
 // @run-at       document-start
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
@@ -25,7 +26,7 @@
 /* globals __META_LAYER_META_DATA */
 const j$ = $; // Just in case websites like replacing $ with some abomination
 
-const version = "2.6.1";
+const version = "2.6.2";
 const scriptName = "bestBuy-cartSavedItems"; // Key prefix for settings retrieval
 const scriptText = `Best Buy (Cart Saved Items) v${version} | Albert Sun / akito#9528`;
 const messageText = "Thank you and good luck! | https://github.com/albert-sun/tamper-scripts";
@@ -214,6 +215,12 @@ async function resetSaved(skipUnload, fromCart) {
 
 (async function() {
     'use strict';
+
+    // Let people know that the script only works on the cart page...
+    if(window.location.href === "https://www.bestbuy.com/site/customer/lists/manage/saveditems") {
+        alert("Script only works on cart page, go there!");
+        return;
+    }    
 
     // Load SimpleBar and script-wide CSS
     GM_addStyle(GM_getResourceText("css"));
