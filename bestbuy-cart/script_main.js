@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy Automation (Cart Saved Items)
 // @namespace    akito
-// @version      2.6.2
+// @version      2.6.3
 // @description  Best Buy queue automation for saved items from the cart page
 // @author       akito#9528 / Albert Sun
 // @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
@@ -26,7 +26,7 @@
 /* globals __META_LAYER_META_DATA */
 const j$ = $; // Just in case websites like replacing $ with some abomination
 
-const version = "2.6.2";
+const version = "2.6.3";
 const scriptName = "bestBuy-cartSavedItems"; // Key prefix for settings retrieval
 const scriptText = `Best Buy (Cart Saved Items) v${version} | Albert Sun / akito#9528`;
 const messageText = "Thank you and good luck! | https://github.com/albert-sun/tamper-scripts";
@@ -190,9 +190,12 @@ async function resetSaved(skipUnload, fromCart) {
             // Initiate edge detection for callback color changes
             // I think it turns to white? Does it sometimes turn yellow as well?
             edgeDetect(storage.colors, sku, "grey", ["white", "yellow"], function() {
-                loggingFunction(`Color transition detected for [${description}], playing audio and clicking button`);
-
-                button.click();
+                if(__META_LAYER_META_DATA.order.lineItems.length !== 0) {
+                    loggingFunction(`Color transition detected for [${description}] but item already detected in cart, not clicking`);
+                } else {
+                    loggingFunction(`Color transition detected for [${description}], playing audio and clicking button`);
+                    button.click();
+                }
             });
         }
     }
