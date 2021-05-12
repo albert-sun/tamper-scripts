@@ -11,7 +11,7 @@ A collection of miscellaneous Tampermonkey userscripts primarily centered around
 [Donate via PayPal](<https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD>) | 1KgcytPHXNwboNbXUN3ZyuASDZWt8Qcf1t | 0xAf9EB617c81B050517E9A8826E4c93DcC182AeaD
 
 # Installation  
-1. Install either the TamperMonkey extension for Chrome / derivatives or the GreaseMonkey extension for Firefox. 
+1. ~~Install either the TamperMonkey extension for Chrome / derivatives or the GreaseMonkey extension for Firefox.~~ **Currently, only the Tampermonkey extension is believed to work - Greasemonkey and other alternatives I believe can't utilize the Tampermonkey functions properly.**
 2. Within the extension settings, set the script check interval (Tampermonkey: Settings -> Script Update) and the externals update interval (Tampermonkey: Settings -> Externals) to the lowest timeframe possible.
 3. Copy the source for **only the main script** linked within [Current Scripts](<https://github.com/albert-sun/tamper-scripts#Current-Scripts>) and paste it into Tampermonkey / Greasemonkey as a new userscript. Ensure that the script is properly saved and enabled by pressing CTRL+S and then checking the scripts dashboard.
 4. The script will automatically update itself and external dependencies. Verify that the script is working properly by navigating to a script-enabled page and checking for the red-orange footer.
