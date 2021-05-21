@@ -19,13 +19,13 @@ A collection of miscellaneous Tampermonkey userscripts primarily centered around
 # Current Scripts
 |Script|Versions|Page Scope|Features|
 |----------------|:------------:|------------------------|--------|
-|Best Buy<br><br>Cart Saved items|[2.4.0](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.4.0/bestbuy-cart/script_main.js)<br>[2.5.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.5/bestbuy-cart/script_main.js)<br>[2.6.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.6/bestbuy-cart/script_main.js)|Cart page|<ul><li>Simple adblock detection and notification (having adblock sometimes messes with website functionality)<li>Automatic interval page reloading for refreshing availability on sold out or unavailable products</li><li>Keyword whitelist and blacklist for processing saved items (note that bundles aren't shown on the cart saved items display)</li></li>Automatic button clicking for initially entering product queue and when queue pops, along with audio notification whenever item is successfully added to cart</li></ul>|
+|Best Buy<br><br>Cart Saved items|[2.4.0](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.4.0/bestbuy-cart/script_main.js)<br>[2.5.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.5/bestbuy-cart/script_main.js)<br>[2.6.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.6/bestbuy-cart/script_main.js)|Cart page|<ul><li>~~Simple adblock detection and notification (having adblock sometimes messes with website functionality)<li>Automatic interval page reloading for refreshing availability on sold out or unavailable products~~ Removed because it never worked properly</li><li>Keyword whitelist and blacklist for processing saved items (note that bundles aren't shown on the cart saved items display)</li></li>Automatic button clicking for initially entering product queue and when queue pops, along with audio notification whenever item is successfully added to cart</li></ul>|
 
 # Changelog
 Best Buy | Cart Saved Items v2.5.2 - Reduced number of color polling intervals from N to 1, hopefully helps with background timers  
 Best Buy | Cart Saved Items v2.6.0 - Removed adblock functionality, added blacklist and whitelist keyword setting, and fixed color interval leaking  
 Best Buy | Cart Saved Items v2.6.1 - Added setting for controlling page auto-refreshing after initial add button click and modified table CSS (more consistent?)  
-Best Buy | Cart Saved Items v2.6.2 - Added quick alert on sved items page to tell users to use the cart page instead...  
+Best Buy | Cart Saved Items v2.6.2 - Added quick alert on saved items page to tell users to use the cart page instead...  
 Best Buy | Cart Saved Items v2.6.2 - Added setting for not adding items to cart if cart is non-empty (for checkout limit)  
 (I forgot what I changed for v2.6.3)  
 Best Buy | Cart Saved Items v2.6.4 - Fixed sleeping not working properly in Firefox and causing all types of issues, should work fine now
