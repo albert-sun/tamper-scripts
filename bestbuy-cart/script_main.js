@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy Automation (Cart Saved Items)
 // @namespace    akito
-// @version      2.6.3
+// @version      2.6.4
 // @description  Best Buy queue automation for saved items from the cart page
 // @author       akito#9528 / Albert Sun
 // @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
@@ -26,7 +26,7 @@
 /* globals __META_LAYER_META_DATA */
 const j$ = $; // Just in case websites like replacing $ with some abomination
 
-const version = "2.6.3";
+const version = "2.6.4";
 const scriptName = "bestBuy-cartSavedItems"; // Key prefix for settings retrieval
 const scriptText = `Best Buy (Cart Saved Items) v${version} | Albert Sun / akito#9528`;
 const messageText = "Thank you and good luck! | https://github.com/albert-sun/tamper-scripts";
@@ -110,21 +110,21 @@ async function resetSaved(skipUnload, fromCart) {
 
         do { // Wait for existing saved items elements to unload
             savedWrappersRes = $(".saved-items__card-wrapper");
-            await new Promise(r => setTimeout(r, settings.loadUnloadInterval.value));
+            await new Promise((r) => { setTimeout(r, settings.loadUnloadInterval.value); });
         } while(savedWrappersRes.length !== 0);
 
         loggingFunction("Finished waiting for saved item elements to unload from DOM");
     } else if($(".removed-item-info__wrapper")[0] !== undefined) { // Weird edge case where elements never truly "disappear", wait instead
         loggingFunction("Detected product removed from cart, performing alternate safety delay instead");
 
-        await new Promise(r => setTimeout(r, settings.cartSkipTimeout.value));
+        await new Promise((r) => { setTimeout(r, settings.cartSkipTimeout.value); });
     }
 
     loggingFunction("Waiting for DOM to be populated with \"new\" saved item elements");
 
     do { // Wait for "new" saved items elements to load
         savedWrappersRes = $(".saved-items__card-wrapper");
-        await new Promise(r => setTimeout(r, settings.loadUnloadInterval.value));
+        await new Promise((r) => { setTimeout(r, settings.loadUnloadInterval.value); });
     } while(savedWrappersRes.length === 0);
 
     loggingFunction("Finished waiting for \"new\" saved item elements to load from DOM");
@@ -263,7 +263,7 @@ async function resetSaved(skipUnload, fromCart) {
         // Force refresh of saved item elements whenever error detected using jQuery
         // Wait some time interval before refreshing to let auto-clicker finish clicking in runtime
         $(".alerts__order").bind('DOMNodeInserted', async function(e) {
-            await new Promise(r => setTimeout(r, settings.errorResetDelay.value));
+            await new Promise((r) => { setTimeout(r, settings.errorResetDelay.value); });
             await resetSaved(false, false);
         });
 
@@ -281,7 +281,7 @@ async function resetSaved(skipUnload, fromCart) {
             if(current.lineItems.length > old.lineItems.length) {
                 audio.play();
             }
-            await new Promise(r => setTimeout(r, settings.cartCheckDelay.value));
+            await new Promise((r) => { setTimeout(r, settings.cartCheckDelay.value) });
             resetSaved(false, true);
         }, "set");
     });
