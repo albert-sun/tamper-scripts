@@ -362,3 +362,12 @@
   width: 38px;
   height: 38px;
 }
+
+.akito-settingsRow {
+  height: 30px;
+}
+
+.akito-settingsButton {
+  height: 24;
+  width: 25%;
+}

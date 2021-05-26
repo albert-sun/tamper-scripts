@@ -1,285 +1,322 @@
 // ==UserScript==
-// @name         Best Buy Automation (Cart Saved Items)
+// @name         Best Buy - Cart Saved Items Automation
 // @namespace    akito
-// @version      2.6.0
-// @description  Best Buy queue automation for saved items from the cart page
+// @version      3.0.0
 // @author       akito#9528 / Albert Sun
-// @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
-// @downloadURL  https://raw.githubusercontent.com/albert-sun/tamper-scripts/main/bestbuy-cart/script_main.js
-// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.6/bestbuy-cart/utilities.js
-// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.6/bestbuy-cart/user_interface.js
-// @require      https://code.jquery.com/jquery-2.2.3.min.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0.0/bestbuy-cart/user_interface.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0.0/bestbuy-cart/constants.js
 // @require      https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js
-// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_2.6/bestbuy-cart/styling.css
+// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0.0/bestbuy-cart/styling.css
 // @match        https://www.bestbuy.com/cart
-// @run-at       document-start
+// @antifeature  opt-in anonymous queue metrics
+// @run-at       document-end
 // @grant        GM_getResourceText
 // @grant        GM_addStyle
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_setClipboard
 // @grant        unsafeWindow
+// @noframes
 // ==/UserScript==
-/* globals $, baseData, callbackArray, callbackObject, checkBlackWhitelist, edgeDetect, elementColor */
-/* globals generateInterface, generateWindow, designateLogging, designateSettings */
-/* globals __META_LAYER_META_DATA */
-const j$ = $; // Just in case websites like replacing $ with some abomination
+/* globals $, __META_LAYER_META_DATA, constants  */
+/* globals generateInterface, generateWindow, designateSettings, designateLogging*/
 
-const version = "2.6.0";
-const scriptName = "bestBuy-cartSavedItems"; // Key prefix for settings retrieval
-const scriptText = `Best Buy (Cart Saved Items) v${version} | Albert Sun / akito#9528`;
-const messageText = "Thank you and good luck! | https://github.com/albert-sun/tamper-scripts";
+const scriptVersion = "3.0.0";
+const scriptPrefix = "BestBuy-CartSavedItems";
+const scriptText = `Best Buy - Cart Saved Items Automation v${scriptVersion} | akito#9528 / Albert Sun`;
+const messageText = "Thanks and good luck! | https://github.com/albert-sun/tamper-scripts";
 
-// Script-specific settings, please don't modify as it probably won't do anything!
-// Instead, use the settings user interface implemented within the script itself.
+// Script-specific settings including their descriptions, types, and default values
+// /!\ DO NOT MODIFY AS IT PROBABLY WON'T DO ANYTHING, use the settings popup instead /!\
 const settings = {
-    initialClick: { description: "Auto-Add Button Clicking", type: "boolean", value: true },
-    autoReloadInterval: { description: "Auto Page Reload Interval (ms, <10000 to disable)", type: "number", value: 0},
-    colorInterval: { description: "Color Polling Interval (ms)", type: "number", value: 250 },
-    loadUnloadInterval: { description: "Load/Unload Polling Interval (ms)", type: "number", value: 50 },
-    cartCheckDelay: { description: "Cart Checking Delay (ms)", type: "number", value: 250 },
-    errorResetDelay: { description: "Error Reset Delay (ms)", type: "number", value: 250 },
-    cartSkipTimeout: { description: "Cart Skip Timeout (ms)", type: "number", value: 5000 },
-    blacklistString: { description: "Blacklist Keywords (Array)", type: "string", value: `[]`},
-    whitelistString: { description: "Whitelist Keywords (Array)", type: "string", value: `["3060", "3070", "3080", "3090", "6700", "6800", "6900", "5600X", "5800X", "5900X", "5950X", "PS5"]`},
+    "allowMetrics": { index: 0, description: "Allow sending of anonymous queue metrics", type: "boolean", value: false },
+    "autoAddClick": { index: 1, description: "Auto-click whitelisted buttons when available", type: "boolean", value: true },
+    "pauseWhenCarted": { index: 2, description: "Pause interval actions when cart occupied", type: "boolean", value: true },
+    "clickTimeout": { index: 3, description: "Element future click timeout after clicking", type: "number", value: 2500 },
+    "globalInterval": { index: 4, description: "Global polling interval for updates (milliseconds)", type: "number", value: 250 },
+    "clickTimeout": { index: 5, description: "Script timeout when clicking add buttons (milliseconds)", type: "number", value: 1000 },
+    "customNotification": { index: 7, description: "Hotlinking URL for custom notification (empty for default)", type: "string", value: "" },
+    "testNotification": { index: 8, description: "[ Press to test the current notification sound ]", type: "button", value: function() { notificationSound.play() } },
+    "useSKUWhitelist": { index: 8, description: "Override the keyword whitelist with the SKU whitelist", type: "boolean", value: false },
+    "whitelistKeywords": { index: 9, description: "Whitelisted keywords (array)", type: "array", value: constants.whitelistKeywords },
+    "blacklistKeywords": { index: 10, description: "Blacklisted keywords (array)", type: "array", value: constants.blacklistKeywords },
+    "whitelistSKUs": { index: 11, description: "Whitelisted SKUs to track (array, NOT UP-TO-DATE)", type: "array", value: constants.whitelistSKUs },
+    // Note: script currently ignores bundles including the PS5 bundles
 };
 
-const audio = new Audio(baseData.notificationSoundData);
-const storage = {
-    buttons: {}, // SKU -> add button elements
-    colors: {}, // SKU -> current button color
-    descriptions: {}, // SKU -> product description
-    interval: undefined, // singular color interval
-}; // Dedicated storage variable for script usage
-let keyWhitelist = [];
-let keyBlacklist = []; // Temporary, blacklist > whitelist
-let loggingFunction = undefined; // Leave for "global" logging usage by script and requirements
+// Script-scoped variables, again please don't modify this unless you know what you're doing
+let notificationSound = new Audio(constants.notificationSound);
+const trackedItems = {}; // button, color, description, timeout
+const sentQueueCodes = []; // For analytics purposes
+let settingsWindow, settingsDiv, loggingWindow, loggingDiv;
+let loggingFunction = undefined; // Placeholder for initialization
+let whitelistKeywords = [];
+let blacklistKeywords = []; // Blacklist > whitelist
+let whitelistSKUs = [];
 
-// Load script user interface consisting of footer and individual windows
-// Also generates and sets debug logging function for script-wide usage
-// @returns {function}
-async function loadInterface() {
-    // Generate script footer and windows
-    generateInterface(scriptText, messageText);
-    const [settingsWindow, settingsDiv] = generateWindow(
-        baseData.settingsIconData,
-        "Settings (Updates on Refresh)", // Width height ignored because compatibility mode
-        400, 400, true // Compatibility mode enabled
-    );
-    const [loggingWindow, loggingDiv] = generateWindow(
-        baseData.loggingIconData,
-        "Debug Logging", // Width height ignored because compatibility mode
-        800, 400, true // Compatibility mode enabled
-    );
-
-    // Designate the two windows as setting and logging windows
-    designateSettings(settingsDiv, settings);
-    const logFunc = designateLogging(loggingWindow, loggingDiv);
-
-    logFunc("Finished initializing script user interface including footer and windows");
-
-    // Set keyword blacklist and whitelist, log if invalid
-    try { keyBlacklist = JSON.parse(settings.blacklistString.value) } catch(_) { logFunc(`/!\\ Error parsing keyword blacklist array from settings`); }
-    try { keyWhitelist = JSON.parse(settings.whitelistString.value) } catch(_) { logFunc(`/!\\ Error parsing keyword whitelist array from settings`); }
-
-    return logFunc;
+// Asynchronous sleep function, fixed for Firefox?
+async function sleep(ms) {
+    await new Promise((resolve) => { setTimeout(resolve, ms); });
 }
 
-// Called on cart change, clear storage and re-retrieve HTML attributes of saved items
-// Saved item elements are unloaded and reloaded with identical but different instances.
-// On initial page load, skipUnload = true to skip element unloading polling.
-// @param {boolean} skipUnload
-// @param {boolean} fromCart
-async function resetSaved(skipUnload, fromCart) {
-    loggingFunction(`Saved elements reset triggered from ${fromCart === true ? "non-" : ""}cart source`);
-    loggingFunction("Clearing existing color polling intervals and temporary storage");
-
-    // Clear color polling interval and existing storage objects
-    clearInterval(storage.interval);
-    storage.buttons = {};
-    storage.colors = {};
-    storage.descriptions = {};
-    storage.interval = undefined;
-
-    // Periodically poll until saved items unload and reload
-    let savedWrappersRes;
-    if(fromCart) { await new Promise(r => setTimeout(r, settings.cartCheckDelay.value)); } // Extra wait, for cart or something idek anymore
-    if($(".removed-item-info__wrapper")[0] === undefined || skipUnload === true) { // Wait instead of polling for removed
-        loggingFunction("Waiting for saved item elements to unload from DOM");
-
-        do { // Wait for existing saved items elements to unload
-            savedWrappersRes = $(".saved-items__card-wrapper");
-            await new Promise(r => setTimeout(r, settings.loadUnloadInterval.value));
-        } while(savedWrappersRes.length !== 0);
-
-        loggingFunction("Finished waiting for saved item elements to unload from DOM");
-    } else if($(".removed-item-info__wrapper")[0] !== undefined) { // Weird edge case where elements never truly "disappear", wait instead
-        loggingFunction("Detected product removed from cart, performing alternate safety delay instead");
-
-        await new Promise(r => setTimeout(r, settings.cartSkipTimeout.value));
-    }
-
-    loggingFunction("Waiting for DOM to be populated with \"new\" saved item elements");
-
-    do { // Wait for "new" saved items elements to load
-        savedWrappersRes = $(".saved-items__card-wrapper");
-        await new Promise(r => setTimeout(r, settings.loadUnloadInterval.value));
-    } while(savedWrappersRes.length === 0);
-
-    loggingFunction("Finished waiting for \"new\" saved item elements to load from DOM");
-
-    // Convert selector result and parse other elements
-    const savedSKUs = savedWrappersRes.toArray().map(element => element.getAttribute("data-test-saved-sku"));
-    const descriptionElements = $(".saved-items__card-wrapper .simple-item__description").toArray();
-    const savedDescriptions = descriptionElements.map(element => element.innerText);
-    const savedButtons = $(".saved-items__card-wrapper .btn.btn-block").toArray();
-
-    loggingFunction(`${savedDescriptions.length} saved products found, filtering blacklist and whitelist (currently hardcoded)`);
-
-    // Parse keywords of each and splice those with blacklisted or without whitelisted
-    let index = savedDescriptions.length;
-    while(index--) { // Loop in reverse to allow splicing
-        const description = savedDescriptions[index];
-        const valid = checkBlackWhitelist(description, keyBlacklist, keyWhitelist);
-        if(valid === false) { // Check whether the saved item is allowed
-            savedSKUs.splice(index, 1);
-            savedDescriptions.splice(index, 1);
-            savedButtons.splice(index, 1);
-        }
-    }
-
-    loggingFunction(`Finished filtering, ${savedDescriptions.length} saved products remaining`);
-    loggingFunction(`Iterating through remaining saved products for initial clicking and polling setup`);
-
-    // Iterate through buttons and deduce whether addable, queued, or unavailable
-    // If addable, click the button (hopefully error element detector callback triggers)
-    // If queued, store relevant info, initiate setInterval, and initiate edge detection
-    let anyClicked = false;
-    const toQueue = []; // SKUs currently queued
-    for(const index in savedButtons) {
-        const button = savedButtons[index];
-        const buttonColor = elementColor(button);
-        const description = savedDescriptions[index];
-        const available = !button.classList.contains("disabled");
-        if((buttonColor === "white" || buttonColor === "blue") && settings.initialClick.value) { // Addable, should be available?
-            loggingFunction(`[${description}] cart addable, clicking and refreshing after products iteration finished`);
-
-            button.click();
-            anyClicked = true;
-        } else if(buttonColor === "grey" && available === true) { // Currently queued
-            if(anyClicked === true) {
-                loggingFunction(`[${description}] currently queued, not initializing color polling interval per pending refresh`);
-
-                continue;
-            }
-
-            loggingFunction(`[${description}] currently queued, initializing color polling interval and callback`);
-
-            // Store relevant info into storage
-            const sku = savedSKUs[index];
-            storage.buttons[sku] = button;
-            storage.colors[sku] = "grey";
-            storage.descriptions[sku] = savedDescriptions[index];
-            toQueue.push(sku); // Add to list of currently queued
-
-            // Initiate edge detection for callback color changes
-            // I think it turns to white? Does it sometimes turn yellow as well?
-            edgeDetect(storage.colors, sku, "grey", ["white", "yellow"], function() {
-                loggingFunction(`Color transition detected for [${description}], playing audio and clicking button`);
-
-                button.click();
-            });
-        }
-    }
-
-    // Initiate periodic interval for updating element colors
-    // Remember that intervals are cleared on each resetSaved call
-    if(toQueue.length !== 0) {
-        storage.interval = setInterval(function() {
-            for(const sku of toQueue) {
-                storage.colors[sku] = elementColor(storage.buttons[sku]);
-            }
-        }, settings.colorInterval.value);
-    }
-
-    // Force reload if any buttons are clicked to ensure status update
-    if(anyClicked === true) {
-        location.reload();
-    }
-}
-
-(async function() {
-    'use strict';
-
-    // Load SimpleBar and script-wide CSS
+// Initialize script user interface consisting of footer and individual windows
+// In particular, initializes settings and logging window (and logging function) before others
+// @returns {boolean} whether initialization succeeded or failed
+async function initialize() {
+    // Load script-wide CSS
     GM_addStyle(GM_getResourceText("css"));
 
-    // Load script settings from Tampermonkey storage
-    for(const property in settings) {
-        const lookupKey = `${scriptName}_${property}`;
-        const storageValue = await GM_getValue(lookupKey, settings[property].value);
+    // Generate base script footer for user interface
+    generateInterface(scriptText, messageText);
 
-        // Attach setter to settings to save any changes
-        // Inconvenient because it requires separate property for each child...
-        settings[property]._value = storageValue;
+    // Load settings from defaults or Tampermonkey storage
+    for(const [property, setting] of Object.entries(settings)) {
+        const lookupKey = `${scriptPrefix}_${property}`;
+        const storedValue = await GM_getValue(lookupKey, settings[property].value);
+
+        // Attach setter to given setting for saving any changes
+        settings[property]._value = storedValue;
         delete settings[property].value;
         Object.defineProperty(settings[property], "value", {
             get: function() { return settings[property]._value; },
             set: function(value) {
+                console.log("changed setting");
                 settings[property]._value = value;
                 GM_setValue(lookupKey, value);
             }
         });
     }
 
-    // Setup auto page refresh, not sure if zero value does anything
-    // Perform first to reduce chances of not working when tab not focused
-    if(settings.autoReloadInterval.value >= 10000) {
-        setTimeout(function() {
-            window.location.reload();
-        }, settings.autoReloadInterval.value);
+    // Generate footer buttons and their respective windows, then designate
+    [settingsWindow, settingsDiv] = generateWindow(constants.settingsIcon, "Settings (updates on reload)", 800, 400, true);
+    [loggingWindow, loggingDiv] = generateWindow(constants.loggingIcon, "Logging", 800, 400, true);
+    designateSettings(settingsWindow, settingsDiv, settings);
+    loggingFunction = designateLogging(loggingWindow, loggingDiv);
+
+    loggingFunction("Finished initializing script user interface");
+
+    // Validate settings once logging function is initialized
+    try { // Attempt to parse and set whitelisted keywords
+        whitelistKeywords = settings.whitelistKeywords.value;
+        if(Array.isArray(whitelistKeywords) === false) { throw new Error("not an array"); }
+    } catch(err) {
+        loggingFunction(`/!\\ Error parsing whitelisted keywords: ${err.message}`);
+        return false;
+    }
+    try { // Attempt to parse and set blacklisted keywords
+        blacklistKeywords = settings.blacklistKeywords.value;
+        if(Array.isArray(blacklistKeywords) === false) { throw new Error("not an array"); }
+    } catch(err) {
+        loggingFunction(`/!\\ Error parsing blacklisted keywords: ${err.message}`);
+        return false;
+    }
+    try { // Attempt to parse and set whitelisted SKUs
+        whitelistSKUs = settings.whitelistSKUs.value;
+        if(Array.isArray(whitelistSKUs) === false) { throw new Error("not an array"); }
+    } catch(err) {
+        loggingFunction(`/!\\ Error parsing whitelisted SKUs: ${err.message}`);
+        return false;
+    }
+}
+
+// Approximates the rendered background color of a given element to a given set of colors.
+// Checks whether the "distance" from the element color is transparent or closest to either yellow/white/blue.
+// @param {element} element
+// @returns {string} color
+const colors = [
+    {color: "yellow", r: 255, g: 224, b: 0},
+    {color: "blue", r: 0, g: 30, b: 115},
+    {color: "grey", r: 197, g: 203, b: 213},
+    {color: "white", r: 255, g: 255, b: 255},
+];
+function elementColor(element) {
+    // Get the rendered background color of the element
+    const colorText = getComputedStyle(element, null).getPropertyValue("background-color");
+    if(colorText.includes("rgb(0, 0, 0")) { // element has no color = transparent
+        return "transparent";
     }
 
-    // Load user interface including footer and windows
-    loggingFunction = await loadInterface();
+    // Parse RGB value and use fancy maths to find closest color
+    const parsedColor = {};
+    const matchedColor = colorText.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
+    parsedColor.r = Number(matchedColor[1]); parsedColor.g = Number(matchedColor[2]); parsedColor.b = Number(matchedColor[3]);
+    const closest = {color: "", distance: 442}; // Default distance just slightly larger than max
+    for(const checkColor of colors) {
+        const distance = Math.sqrt((parsedColor.r - checkColor.r) ** 2 + (parsedColor.g - checkColor.g) ** 2 + (parsedColor.b - checkColor.b));
+        if(distance < closest.distance) {
+            closest.color = checkColor.color;
+            closest.distance = distance;
+        }
+    }
 
-    addEventListener('DOMContentLoaded', async function() {
-        loggingFunction("Initializing callback to saved items reset on error message detection");
+    return closest.color;
+}
 
-        // Force refresh of saved item elements whenever error detected using jQuery
-        // Wait some time interval before refreshing to let auto-clicker finish clicking in runtime
-        $(".alerts__order").bind('DOMNodeInserted', async function(e) {
-            await new Promise(r => setTimeout(r, settings.errorResetDelay.value));
-            await resetSaved(false, false);
-        });
+// Saved items tracker function caching saved items elements and polling for color changes?
+async function trackSaved() {
+    loggingFunction("Waiting until saved items elements are loaded into DOM");
 
-        loggingFunction("Performing initial saved items setup (bundles not supported by cart page)");
+    // Periodically poll until saved items loaded by checking header existence
+    while(document.getElementsByClassName("saved-items__header").length === 0) {
+        await sleep(settings.globalInterval.value);
+    } // Then, retrieve complete list of relevant saved items information
+    const savedSKUs = $(".saved-items__card-wrapper").toArray()
+        .map(wrapperElement => wrapperElement.getAttribute("data-test-saved-sku"));
+    const savedDescriptions = $(".saved-items__card-wrapper .simple-item__description").toArray()
+        .map(descriptionElement => descriptionElement.innerText);
+    const savedButtons = $(".saved-items__card-wrapper .btn.btn-block").toArray();
 
-        await resetSaved(true, false); // Initial call on page load
+    loggingFunction(`${savedSKUs.length} saved items found, filtering through whitelist and blacklist`);
 
-        loggingFunction("Initializing callback to saved items reset on cart change (including pickup/shipping change)");
+    // Parse keywords / SKUs for each and splice blacklisted or non-whitelisted
+    let index = savedSKUs.length;
+    while(index--) { // Loop in reverse to allow splicing
+        const sku = savedSKUs[index];
+        const description = savedDescriptions[index];
 
-        // Force refresh of saved item elements whenever order summary changes (cart addition / removal?)
-        // window.cart extraordinarily slippery, unable to hook getters/setters or anything
-        // Currently triggers on picking/shipping swaps but don't want custom callback function...
-        callbackObject(__META_LAYER_META_DATA, "order", async function(old, current) {
-            // Play audio if added to cart (applies to both normal and queue items)
-            if(current.lineItems.length > old.lineItems.length) {
-                audio.play();
+        // Verify thorugh keyword descriptions or SKU depending on setting
+        let valid = false; // Placeholder value
+        if(settings.useSKUWhitelist.value === true) {
+            valid = whitelistSKUs.includes(Number(sku));
+        } else { // if settings["useSKUWhitelist"].value === false
+            const containsWhitelist = whitelistKeywords.filter(
+                keyword => description.includes(keyword)
+            ).length > 0; // Whether description contains any whitelisted keywords
+            const containsBlacklist = blacklistKeywords.filter(
+                keyword => description.includes(keyword)
+            ).length > 0; // Whether description contains any blacklisted keywords
+
+            valid = containsWhitelist === true && containsBlacklist === false;
+        }
+
+        // If don't track item, splice from array
+        if(valid === false) {
+            savedSKUs.splice(index, 1);
+            savedDescriptions.splice(index, 1);
+            savedButtons.splice(index, 1);
+        }
+    }
+
+    loggingFunction(`Finished filtering whitelisted items, ${savedSKUs.length} items remaining`);
+    loggingFunction(`Initializing polling interval for auto-clicking items with clickable buttons`);
+
+    // Iterate through remaining and check which ones are clickable / queued
+    for(const index in savedSKUs) {
+        const sku = savedSKUs[index];
+        const button = savedButtons[index];
+        const description = savedDescriptions[index];
+        const buttonColor = elementColor(button);
+
+        // Check whether button currently clickable or queued by checking button text
+        // Honestly ignoring anything that says "Find a Store" since the script can't choose stores
+        if(button.innerText === "Add to Cart") {
+            if(buttonColor === "grey") {
+                loggingFunction(`Currently queued: ${description}`);
             }
-            resetSaved(false, true);
-        }, "set");
-    });
-}());
 
-/*
-== Current Bugs ==
-- Must reload page sometimes after clicking initial add because no "Please Wait" transition
-== Current Testing Checklist ==
-[ ] Error message element DOM insert callback
-[X] Cart addition / removal (/ fulfillment swap) callback
-[X] Correct whitelist and blacklist keyword product filtering and splicing
-[X] Correct added / queued / unavailable element detection
-[X] Dummy queued availability callback (audio + click)
-[X] Reset routine on cart addition / removal (/ fulfillment swap)
-*/
+            trackedItems[sku] = {
+                button: button,
+                color: buttonColor,
+                description: description,
+                timeout: false,
+            }
+        }
+    }
+
+    // Initializing polling interval with cooldown on click
+    const pollingIntervalID = setInterval(async function() {
+        // Check whether cart contains item
+        if(__META_LAYER_META_DATA.order.lineItems.length > 0) { 
+            loggingFunction(`Cart currently has item, cancelling polling interval`);
+
+            clearInterval(pollingIntervalID);
+            return; 
+        }
+
+        // Iterate over trackable items, update color, and click if popped
+        for(const [_, trackedInfo] of Object.entries(trackedItems)) {
+            trackedInfo.color = elementColor(trackedInfo.button);
+            if(trackedInfo.color === "white" || trackedInfo.color === "blue" || trackedInfo.color === "yellow") {
+                loggingFunction(`Clickable initial / popped: ${trackedInfo.description}`);
+
+                trackedInfo.button.click(); // Click button obviously
+
+                // Timeout button for given time
+                trackedInfo.timeout = true;
+                setTimeout(function() { trackedInfo.timeout = false }, settings.clickTimeout.value);
+            }
+        }
+
+        // ANTIFEATURE: send anonymous queue data gathered through localStorage
+        // Leave the analytics to last in case it breaks (somehow) and throws an error which would kill the function
+        // Queue data can't be transported even between sessions, believe me I've tried...
+        if(settings.allowMetrics.value === true) {
+            // Retrieve current queues from page laod and send queue information
+            const queuesData = JSON.parse(atob(localStorage.getItem("purchaseTracker"))) || {};
+            for(const [sku, queueData] of Object.entries(queuesData)) {
+                const bundle = [sku, ...queueData]; // SKU and queue data
+
+                // Prevent duplicate requests by marking codes as seen
+                if(sentQueueCodes.includes(queueData[2])) {
+                    continue;
+                }
+                sentQueueCodes.push(queueData[2]);
+
+                // Sending repeat queues shouldn't matter that much honestly, Cloudflare is generous?
+                loggingFunction(`Sending queue analytics for saved item with SKU ${sku}`);
+                await fetch("https://bestbuy-analytics.akitocodes.workers.dev/", {
+                    method: "POST",
+                    body: JSON.stringify(bundle),
+                });
+            }
+        }
+    }, settings.globalInterval.value)
+}
+
+// Main function, called using async wrapper below
+async function main() {
+    'use strict'; // Something about ES6 syntax?
+
+    // Perform initialization separate from main
+    const initResult = await initialize();
+    if(initResult === false) { // loggingFunction should be initialized
+        loggingFunction("Stopping script because initialization failed");
+        return;
+    }
+
+    // Metadata includes run-at document-end, shouldn't need DOMContentLoaded event
+
+    loggingFunction("Initializing saved items queue tracker (bundles currently not supported)");
+
+    await trackSaved();
+
+    loggingFunction("Initializing cart tracker to automatically refresh on contents change");
+
+    // Attach setter to cart order to receive callback whenever contents change
+    // Reload the page whenever the cart contents change since saved elements unload and reload
+    __META_LAYER_META_DATA._order = __META_LAYER_META_DATA.order;
+    Object.defineProperty(__META_LAYER_META_DATA, "order", {
+        get: function() { return __META_LAYER_META_DATA._order; } ,
+        set: function(newOrder) {
+            try {
+                const oldCartLength = __META_LAYER_META_DATA.order.lineItems.length;
+                const newCartLength = newOrder.lineItems.length;
+
+                if(newCartLength !== oldCartLength) {
+                    // Play notification sound when item added to cart
+                    if(newCartLength > oldCartLength) {
+                        notificationSound.play();
+                    }
+
+                    window.location.reload();
+                }
+            } catch(err) {
+                loggingFunction(`/!\\ Error from cart setter: ${err.message}`);
+            }
+
+            __META_LAYER_META_DATA._order = newOrder;
+        }
+    });
+}
+
+(async function() { await main(); }());
