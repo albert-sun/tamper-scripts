@@ -1,32 +1,34 @@
-let footer; // Footer containing all icons and statuses
-let windowIndex = 0; // Index of generated window
-const statuses = []; // Window open statuses (true / false)
-const selectors = []; // Window elements for sliding
+let footer; // Footer element 
+let windowIndex = 0; // Generated window index
+const windowsInfo = []; // selector (for sliding), open
 
-// Displayed windows slideToggle control ensuring only one window at a time is shown.
-// Faster sliding transition when closing previous window when new window is being opened.
+// slideToggle control for displayed windows ensuring only one is shown at a time
+// Faster sliding transition when closing other windows than opening window
 function windowControl(index) {
-    if(statuses[index] === true) { // Window currently open, close it
-        statuses[index] = !statuses[index]; // Open -> closed
-        selectors[index].slideToggle(400);
+    const windowInfo = windowsInfo[index];
+    if(windowInfo.open === true) { // Window currently open, close it
+        windowInfo.open = !windowInfo.open; // open -> closed
+        windowInfo.selector.slideToggle(400);
     } else { // Window currently closed
-        // Close any windows currently open (should be one max)
-        for(const ind in statuses) {
-            if(statuses[ind] === true) {
-                statuses[ind] = !statuses[ind];; // Open -> closed
-                selectors[ind].slideToggle(200);
+        // Close other windows currently open (should beonly one)
+        for(const otherWindowInfo of windowsInfo) {
+            if(otherWindowInfo.open) {
+                otherWindowInfo.open = !otherWindowInfo.open; // open -> closed
+                otherWindowInfo.selector.slideToggle(200);
             }
         }
 
-        statuses[index] = !statuses[index]; // Closed -> open
-        selectors[index].slideToggle(400);
-    }
-};
+        windowInfo.open = !windowInfo.open; // closed -> open
+        windowInfo.selector.slideToggle(400);
 
-// Generate red-orange header with text, pretty simple.
+        return;
+    }
+}
+
+// Generates red-orange window header with text
 // @param {string} text
-// @returns {DOMElement}
-function generateHeader(text) {
+// @returns {DOMElement} the header element
+function generateWindowHeader(text) {
     // Generate header wrapper element
     const header = document.createElement("div");
     header.classList.add("akito-header");
@@ -94,20 +96,20 @@ function generateWindow(iconURL, title, width, height, compatibility = false) {
         contentDiv.classList.add("akito-windowContent");
     }
     // Best Buy doesn't let me set the left property that's so stupid
-    statuses[index] = false;
-    selectors[index] = j$(thisWindow);
+    windowsInfo[index] = {
+        open: false,
+        selector: $(thisWindow),
+    }
 
     // Initialize window header with title
-    const header = generateHeader(title);
+    const header = generateWindowHeader(title);
     header.classList.add("akito-black");
     thisWindow.appendChild(header);
 
     // Add to document body and retrieve selector when loaded
-    window.addEventListener("DOMContentLoaded", function(_) {
-        document.body.appendChild(thisWindow);
-        j$(thisWindow).hide(); // Best Buy forcing me to initially hide?
-        if(compatibility === false) { new SimpleBar(contentDiv); }
-    });
+    document.body.appendChild(thisWindow);
+    $(thisWindow).hide(); // Best Buy forcing me to initially hide?
+    if(compatibility === false) { new SimpleBar(contentDiv); }
 
     return [ thisWindow, contentDiv ];
 }
@@ -135,29 +137,20 @@ function generateInterface(scriptText, messageText) {
     messageInfo.innerHTML = messageText;
 
     // Append elements and process selectors on document load
-    j$(document).ready(function() {
+    $(document).ready(function() {
         document.body.appendChild(footer);
     });
 }
 
-// Small function for "weighing" the settings type for sorting
-// @param {Object} value
-function settingsWeight(value) {
-    switch(value.type) {
-        case "boolean": return 0;
-        case "number": return 1;
-        case "array": return 2;
-    }
-}
-
 // Designates div for settings with onchange modification to passed settings
 // number: current (number), valid (array of numbers)
-// @param {DOMElement} contentDiv
+// @param {DOMElement} settingsWindow
+// @param {DOMElement} settingsDiv
 // @param {Object} settings
-function designateSettings(contentDiv, settings) {
+function designateSettings(settingsWindow, settingsDiv, settings) {
     // Generate wrapper table element
     const settingsTable = document.createElement("table");
-    contentDiv.appendChild(settingsTable);
+    settingsDiv.appendChild(settingsTable);
     settingsTable.classList.add("akito-table");
 
     // Transform and sort settings by type and alphabetical order
@@ -166,20 +159,11 @@ function designateSettings(contentDiv, settings) {
         settingsArray.push(settings[property]);
     }
     settingsArray.sort(function(value, value2) {
-        const valueWeight = settingsWeight(value);
-        const value2Weight = settingsWeight(value2);
-
-        if(valueWeight < value2Weight) {
+        if(value.index < value2.index) {
             return -1;
-        } else if(valueWeight === value2Weight) {
-            if(value.description < value2.description) {
-                return -1;
-            } else if(value.description === value2.description) {
-                return 0; // Should never happen
-            } else {
-                return 1;
-            }
-        } else {
+        } else if(value.index === value2.index) { // Shouldn't occur
+            return 0;
+        } else { // if value.index > value2.index
             return 1;
         }
     });
@@ -188,6 +172,7 @@ function designateSettings(contentDiv, settings) {
     for(const setting of settingsArray) {
         // Generate row for specific setting
         const row = document.createElement("tr");
+        row.classList.add("akito-settingsRow");
         settingsTable.appendChild(row);
 
         // Generate cell showing setting description (onhover?)
@@ -212,6 +197,7 @@ function designateSettings(contentDiv, settings) {
                 checkbox.onclick = function() {
                     setting.value = checkbox.checked;
                 };
+
                 break;
             case "number": // Numerical text input
                 const numberInput = document.createElement("input");
@@ -219,20 +205,40 @@ function designateSettings(contentDiv, settings) {
                 settingCell.appendChild(numberInput);
                 numberInput.setAttribute("type", "number");
                 numberInput.value = setting.value;
-                j$(numberInput).change(function() {
+                $(numberInput).change(function() {
                     setting.value = numberInput.value;
                 });
+
                 break;
             case "string": // String text input 
                 const stringInput = document.createElement("input");
                 stringInput.classList.add("akito-black");
                 settingCell.appendChild(stringInput);
                 stringInput.value = setting.value;
-                j$(stringInput).change(function() {
+                $(stringInput).change(function() {
                     setting.value = stringInput.value;
                 });
+
                 break;
-            case "array": break; // Currently not implemented
+            case "button": // Button to click
+                const button = document.createElement("button");
+                button.classList.add("akito-settingsButton");
+                settingCell.appendChild(button);
+                button.innerText = "Click";
+                button.onclick = setting.value;
+                
+                break;
+            case "array": // Currently just string input
+                const arrayInput = document.createElement("input");
+                arrayInput.classList.add("akito-black");
+                settingCell.appendChild(arrayInput);
+
+                arrayInput.value = setting.value.join(",");
+                $(arrayInput).change(function() {
+                    setting.value = arrayInput.value.toString().split(",");
+                });
+
+                break;
         }
     }
 }
@@ -265,7 +271,7 @@ function designateLogging(window, contentDiv) {
 
     // Generates timestamp and appends to logging table
     // @param {string} message
-    const loggingFunction = function(message) {
+    const loggingFunction = async function(message) {
         const row = document.createElement("tr");
 
         // Generate timestamp cell
