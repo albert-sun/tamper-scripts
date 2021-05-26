@@ -250,9 +250,9 @@ async function trackSaved() {
         // ANTIFEATURE: send anonymous queue data gathered through localStorage
         // Leave the analytics to last in case it breaks (somehow) and throws an error which would kill the function
         // Queue data can't be transported even between sessions, believe me I've tried...
-        if(settings.allowMetrics === true) {
+        if(settings.allowMetrics.value === true) {
             // Retrieve current queues from page laod and send queue information
-            const queuesData = localStorage.getItem("purchaseTracker") || {};
+            const queuesData = JSON.parse(atob(localStorage.getItem("purchaseTracker"))) || {};
             for(const [sku, queueData] of Object.entries(queuesData)) {
                 const bundle = [sku, ...queueData]; // SKU and queue data
 
