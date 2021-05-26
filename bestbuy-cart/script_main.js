@@ -305,6 +305,7 @@ async function main() {
                 if(newCartLength !== oldCartLength) {
                     // Play notification sound when item added to cart
                     if(newCartLength > oldCartLength) {
+                        await sleep(1000);
                         notificationSound.play();
                     }
 
