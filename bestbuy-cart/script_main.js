@@ -305,11 +305,10 @@ async function main() {
                 if(newCartLength !== oldCartLength) {
                     // Play notification sound when item added to cart
                     if(newCartLength > oldCartLength) {
-                        await sleep(1000);
                         notificationSound.play();
                     }
 
-                    window.location.reload();
+                    setTimeout(window.location.reload, 1000);
                 }
             } catch(err) {
                 loggingFunction(`/!\\ Error from cart setter: ${err.message}`);
