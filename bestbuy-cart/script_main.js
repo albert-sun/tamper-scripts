@@ -85,7 +85,7 @@ async function initialize() {
             }
         });
     }
-    
+
     if(settings.customNotification.value === "") {
         notificationSound = new Audio(constants.notificationSound);
     } else {
@@ -231,11 +231,11 @@ async function trackSaved() {
     // Initializing polling interval with cooldown on click
     const pollingIntervalID = setInterval(async function() {
         // Check whether cart contains item
-        if(__META_LAYER_META_DATA.order.lineItems.length > 0) { 
+        if(__META_LAYER_META_DATA.order.lineItems.length > 0) {
             loggingFunction(`Cart currently has item, cancelling polling interval`);
 
             clearInterval(pollingIntervalID);
-            return; 
+            return;
         }
 
         // Iterate over trackable items, update color, and click if popped
@@ -313,7 +313,7 @@ async function main() {
                         notificationSound.play();
                     }
 
-                    setTimeout(window.location.reload, 1000);
+                    setTimeout(function() { location.reload(); }, 1000);
                 }
             } catch(err) {
                 loggingFunction(`/!\\ Error from cart setter: ${err.message}`);
