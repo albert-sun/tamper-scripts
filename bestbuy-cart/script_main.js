@@ -23,7 +23,7 @@
 /* globals $, __META_LAYER_META_DATA, constants  */
 /* globals generateInterface, generateWindow, designateSettings, designateLogging*/
 
-const scriptVersion = "3.1.0";
+const scriptVersion = "3.0.1";
 const scriptPrefix = "BestBuy-CartSavedItems";
 const scriptText = `Best Buy - Cart Saved Items Automation v${scriptVersion} | akito#9528 / Albert Sun`;
 const messageText = "Thanks and good luck! | Donations: https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD";
