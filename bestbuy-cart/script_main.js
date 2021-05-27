@@ -33,15 +33,16 @@ const settings = {
     "autoAddClick": { index: 1, description: "Auto-click whitelisted buttons when available", type: "boolean", value: true },
     "pauseWhenCarted": { index: 2, description: "Pause interval actions when cart occupied", type: "boolean", value: true },
     "ignoreFailed": { index: 3, description: "Ignore cart buttons if still clickable after clicked (failed)", type: "boolean", value: false },
-    "clickTimeout": { index: 4, description: "Timeout between clicks to prevent rate limiting", type: "number", value: 1000 },
-    "globalInterval": { index: 5, description: "Global polling interval for updates (milliseconds)", type: "number", value: 250 },
-    "clickTimeout": { index: 6, description: "Script timeout when clicking add buttons (milliseconds)", type: "number", value: 1000 },
-    "customNotification": { index: 7, description: "Hotlinking URL for custom notification (empty for default)", type: "string", value: constants.notificationSound },
-    "testNotification": { index: 8, description: "[ Press to test the current notification sound ]", type: "button", value: function() { notificationSound.play() } },
-    "useSKUWhitelist": { index: 9, description: "Override the keyword whitelist with the SKU whitelist", type: "boolean", value: false },
-    "whitelistKeywords": { index: 10, description: "Whitelisted keywords (array)", type: "array", value: constants.whitelistKeywords },
-    "blacklistKeywords": { index: 11, description: "Blacklisted keywords (array)", type: "array", value: constants.blacklistKeywords },
-    "whitelistSKUs": { index: 12, description: "Whitelisted SKUs to track (array, NOT UP-TO-DATE)", type: "array", value: constants.whitelistSKUs },
+    "refreshCartChange": { index: 4, description: "Refresh the page when cart contents change (recommended)", type: "boolean", value: true },
+    "clickTimeout": { index: 5, description: "Timeout between clicks to prevent rate limiting", type: "number", value: 1000 },
+    "globalInterval": { index: 6, description: "Global polling interval for updates (milliseconds)", type: "number", value: 250 },
+    "clickTimeout": { index: 7, description: "Script timeout when clicking add buttons (milliseconds)", type: "number", value: 1000 },
+    "customNotification": { index: 8, description: "Hotlinking URL for custom notification (empty for default)", type: "string", value: constants.notificationSound },
+    "testNotification": { index: 9, description: "[ Press to test the current notification sound ]", type: "button", value: function() { notificationSound.play() } },
+    "useSKUWhitelist": { index: 10, description: "Override the keyword whitelist with the SKU whitelist", type: "boolean", value: false },
+    "whitelistKeywords": { index: 11, description: "Whitelisted keywords (array)", type: "array", value: constants.whitelistKeywords },
+    "blacklistKeywords": { index: 12, description: "Blacklisted keywords (array)", type: "array", value: constants.blacklistKeywords },
+    "whitelistSKUs": { index: 13, description: "Whitelisted SKUs to track (array, NOT UP-TO-DATE)", type: "array", value: constants.whitelistSKUs },
     // Note: script currently ignores bundles including the PS5 bundles
 };
 
@@ -338,8 +339,11 @@ async function main() {
                         notificationSound.play();
                     }
 
-                    // Timeout page reload to let notification sound play fully
-                    setTimeout(function() { location.reload(); }, 1000);
+                    // Only refresh page on cart change if enabled in settings
+                    if(settings.refreshCartChange.value === true) {
+                        // Timeout page reload to let notification sound play fully
+                        setTimeout(function() { location.reload(); }, 1000);
+                    }
                 }
             } catch(err) {
                 loggingFunction(`/!\\ Error from cart setter: ${err.message}`);
