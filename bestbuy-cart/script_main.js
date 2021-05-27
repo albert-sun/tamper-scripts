@@ -26,7 +26,7 @@
 const scriptVersion = "3.0.1";
 const scriptPrefix = "BestBuy-CartSavedItems";
 const scriptText = `Best Buy - Cart Saved Items Automation v${scriptVersion} | akito#9528 / Albert Sun`;
-const messageText = "Thanks and good luck! | Donations: https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD";
+const messageText = `Thanks and good luck! | <a href="https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD">Donate via PayPal</a>`;
 
 // Script-specific settings including their descriptions, types, and default values
 // /!\ DO NOT MODIFY AS IT PROBABLY WON'T DO ANYTHING, use the settings popup instead /!\
@@ -272,7 +272,7 @@ async function trackSaved() {
             } else {
                 // Remove flag from SKU because successful color flip
                 // Does nothing if undefined property
-                delete ignoreStatuses[sku]; 
+                delete ignoreStatuses[sku];
             }
         }
 
