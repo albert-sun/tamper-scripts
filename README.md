@@ -25,7 +25,7 @@ A collection (currently just one though) of Tampermonkey userscripts primarily c
 **Best Buy | Cart Saved Items v2.6.3** - Added setting for not adding items to cart if cart is non-empty (for checkout limit)  
 **Best Buy | Cart Saved Items v2.6.4** - Fixed sleeping not working properly in Firefox and causing all types of issues, should work fine now  
 **Best Buy | Cart Saved Items Automation v3.0.0** (renamed) - Complete recode trimming some functions while adding others. Most important features: opt-in anonymous queue analytics and forced refresh on cart contents change  
-**Best Buy | Cart Saved Items Automation v3.1.0** - Made polling synchronous, (untested) added button ignoring and timeouts to fix script hanging, (untested) added setting for choosing whether to refresh on cart change (please do, the script doesn't work once elements unload and reload), and finally shamelessly moved my PayPal donation link to the message text
+**Best Buy | Cart Saved Items Automation v3.0.1** - Made polling synchronous, (untested) added button ignoring and timeouts to fix script hanging, (untested) added setting for choosing whether to refresh on cart change (please do, the script doesn't work once elements unload and reload), and finally shamelessly moved my PayPal donation link to the message text
 
 # Frequently Asked Questions
 **Q: Do scripts work on multiple / non-focused tabs?**  
