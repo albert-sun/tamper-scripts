@@ -242,7 +242,6 @@ async function trackSaved() {
         if(__META_LAYER_META_DATA.order.lineItems.length > 0) {
             loggingFunction(`Cart currently has item, cancelling polling interval`);
 
-            clearInterval(pollingIntervalID);
             return;
         }
 
@@ -259,7 +258,7 @@ async function trackSaved() {
                     if(ignoreStatuses[sku] === undefined) {
                         ignoreStatuses[sku] = false;
                     } else if(ignoreStatuses[sku] === false) {
-                        ignoredStatuses[sku] = true;
+                        ignoreStatuses[sku] = true;
 
                         continue;
                     } else if(ignoreStatuses[sku] === true) {
@@ -269,7 +268,7 @@ async function trackSaved() {
                 }
 
                 trackedInfo.button.click(); // Click button obviously
-                await sleep(clickTimeout);
+                await sleep(settings.clickTimeout.value);
             } else {
                 // Remove flag from SKU because successful color flip
                 // Does nothing if undefined property
