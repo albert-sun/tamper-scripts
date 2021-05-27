@@ -42,3 +42,6 @@ A: Unfortunately, I can't make the script effectively work for in-store selectio
 
 **Q: Will you ever add auto-checkout?**  
 A: I currently don't plan to implement auto-checkout within the script since it would encourage AFKing during drops. Furthermore, auto-checkout sometimes requires typing in the CVV / receiving a verification code and that poses a massive privacy / security risk I'm not willing to deal with.  
+
+# Notes 
+I've deprecated the auto-reload functionality since it was being finicky under Chrome's low-usage mode (triggered when tabs are unfocused). I would suggest using an extension like [Distill](https://chrome.google.com/webstore/detail/distill-web-monitor/inlikjemeeknofckkjolnjbpehgadgge?hl=en) instead for auto-reloading.
