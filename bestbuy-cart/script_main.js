@@ -35,7 +35,7 @@ const settings = {
     "clickTimeout": { index: 3, description: "Element future click timeout after clicking", type: "number", value: 2500 },
     "globalInterval": { index: 4, description: "Global polling interval for updates (milliseconds)", type: "number", value: 250 },
     "clickTimeout": { index: 5, description: "Script timeout when clicking add buttons (milliseconds)", type: "number", value: 1000 },
-    "customNotification": { index: 7, description: "Hotlinking URL for custom notification (empty for default)", type: "string", value: "" },
+    "customNotification": { index: 7, description: "Hotlinking URL for custom notification (empty for default)", type: "string", value: constants.notificationSound },
     "testNotification": { index: 8, description: "[ Press to test the current notification sound ]", type: "button", value: function() { notificationSound.play() } },
     "useSKUWhitelist": { index: 8, description: "Override the keyword whitelist with the SKU whitelist", type: "boolean", value: false },
     "whitelistKeywords": { index: 9, description: "Whitelisted keywords (array)", type: "array", value: constants.whitelistKeywords },
@@ -45,7 +45,7 @@ const settings = {
 };
 
 // Script-scoped variables, again please don't modify this unless you know what you're doing
-let notificationSound = new Audio(constants.notificationSound);
+let notificationSound;
 const trackedItems = {}; // button, color, description, timeout
 const sentQueueCodes = []; // For analytics purposes
 let settingsWindow, settingsDiv, loggingWindow, loggingDiv;
@@ -72,19 +72,24 @@ async function initialize() {
     // Load settings from defaults or Tampermonkey storage
     for(const [property, setting] of Object.entries(settings)) {
         const lookupKey = `${scriptPrefix}_${property}`;
-        const storedValue = await GM_getValue(lookupKey, settings[property].value);
+        const storedValue = await GM_getValue(lookupKey, setting.value);
 
         // Attach setter to given setting for saving any changes
-        settings[property]._value = storedValue;
-        delete settings[property].value;
-        Object.defineProperty(settings[property], "value", {
-            get: function() { return settings[property]._value; },
+        setting._value = storedValue;
+        delete setting.value;
+        Object.defineProperty(setting, "value", {
+            get: function() { return setting._value; },
             set: function(value) {
-                console.log("changed setting");
-                settings[property]._value = value;
+                setting._value = value;
                 GM_setValue(lookupKey, value);
             }
         });
+    }
+    
+    if(settings.customNotification.value === "") {
+        notificationSound = new Audio(constants.notificationSound);
+    } else {
+        notificationSound = new Audio(settings.customNotification.value);
     }
 
     // Generate footer buttons and their respective windows, then designate
