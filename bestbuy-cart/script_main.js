@@ -29,7 +29,7 @@ const scriptText = `Best Buy - Cart Saved Items Automation v${scriptVersion} | a
 const messageText = `Thanks and good luck! | <a href="https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD">Donate via PayPal</a>`;
 
 // Script-specific settings including their descriptions, types, and default values
-// /!\ DO NOT MODIFY AS IT PROBABLY WON'T DO ANYTHING, use the settings popup instead /!\
+// /!\ DO NOT MODIFY AS IT  PROBABLY WON'T DO ANYTHING, use the settings popup instead /!\
 const settings = {
     "allowMetrics": { index: 0, description: "Allow sending of anonymous queue metrics", type: "boolean", value: false },
     "autoAddClick": { index: 1, description: "Auto-click whitelisted buttons when available", type: "boolean", value: true },
@@ -296,7 +296,10 @@ async function trackSaved() {
                 loggingFunction(`Sending queue analytics for saved item with SKU ${sku}`);
                 await fetch("https://bestbuy-analytics.akitocodes.workers.dev/", {
                     method: "POST",
-                    body: JSON.stringify(bundle),
+                    body: JSON.stringify({
+                        data: bundle,
+                        version: scriptVersion,
+                    }),
                 });
             }
         }
