@@ -3,12 +3,12 @@
 // @namespace    akito
 // @version      3.0.1
 // @author       akito#9528 / Albert Sun
-// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0.0/bestbuy-cart/user_interface.js
-// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0.0/bestbuy-cart/constants.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0/bestbuy-cart/user_interface.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0/bestbuy-cart/constants.js
 // @require      https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js
-// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0.0/bestbuy-cart/styling.css
-// @downloadURL  https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0.0/bestbuy-cart/script_main.js
-// @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0.0/bestbuy-cart/script_main.js
+// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0/bestbuy-cart/styling.css
+// @downloadURL  https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0/bestbuy-cart/script_main.js
+// @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0/bestbuy-cart/script_main.js
 // @match        https://www.bestbuy.com/cart
 // @antifeature  opt-in anonymous queue metrics
 // @run-at       document-end
