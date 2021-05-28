@@ -294,7 +294,7 @@ async function trackSaved() {
 
                 // Sending repeat queues shouldn't matter that much honestly, Cloudflare is generous?
                 loggingFunction(`Sending queue analytics for saved item with SKU ${sku}`);
-                await fetch("https://bestbuy-analytics.akitocodes.workers.dev/", {
+                await fetch("https://bestbuy-queue-analytics.akitocodes.workers.dev/", {
                     method: "POST",
                     body: JSON.stringify({
                         data: bundle,
