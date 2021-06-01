@@ -5,7 +5,7 @@ A collection (currently just one though) of Tampermonkey userscripts primarily c
 
 ⚠️ **DO NOT download anything straight from the main branch as it could be outdated (I only pull request major and minor script versions)**.⚠️  
 
-**Discord**: akito#9528  
+[Join the Discord server](<https://discord.com/channels/767566223729754122/847824352647970826/849044131509829722>)  
 **Twitch (direct message):** AkitoApocalypse  
 [Donate via PayPal](<https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD>) | 1KgcytPHXNwboNbXUN3ZyuASDZWt8Qcf1t | 0xAf9EB617c81B050517E9A8826E4c93DcC182AeaD
 
@@ -20,12 +20,12 @@ A collection (currently just one though) of Tampermonkey userscripts primarily c
 |**Best Buy**<br>Cart Saved Items Automation|[2.4.0](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.4.0/bestbuy-cart/script_main.js)<br>[2.5.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.5/bestbuy-cart/script_main.js)<br>[2.6.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.6/bestbuy-cart/script_main.js)<br>[3.0.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_3.0/bestbuy-cart/script_main.js)|Cart page<br><br>**NOT THE SAVED ITEMS PAGE**|<ul><li>~~Simple adblock detection and notification (having adblock sometimes messes with website functionality)<li>Automatic interval page reloading for refreshing availability on sold out or unavailable products~~</li><li>Keyword whitelist, keyword blacklist, and SKU whitelist for processing saved items (note that bundles aren't shown on the cart saved items display, sorry!)</li><li>Automatic add-to-cart button clicking when available along with audio notification whenever item is successfully added to cart</li></ul>|
 
 # Changelog
-**Best Buy | Cart Saved Items v2.6.1** - Added setting for controlling page auto-refreshing after initial add button click and modified table CSS (more consistent?)  
 **Best Buy | Cart Saved Items v2.6.2** - Added quick alert on saved items page to tell users to use the cart page instead...  
 **Best Buy | Cart Saved Items v2.6.3** - Added setting for not adding items to cart if cart is non-empty (for checkout limit)  
 **Best Buy | Cart Saved Items v2.6.4** - Fixed sleeping not working properly in Firefox and causing all types of issues, should work fine now  
 **Best Buy | Cart Saved Items Automation v3.0.0** (renamed) - Complete recode trimming some functions while adding others. Most important features: opt-in anonymous queue analytics and forced refresh on cart contents change  
-**Best Buy | Cart Saved Items Automation v3.0.1** - Made polling synchronous, (untested) added button ignoring and timeouts to fix script hanging, (untested) added setting for choosing whether to refresh on cart change (please do, the script doesn't work once elements unload and reload), and finally shamelessly moved my PayPal donation link to the message text
+**Best Buy | Cart Saved Items Automation v3.0.1** - Made polling synchronous, (untested) added button ignoring and timeouts to fix script hanging, (untested) added setting for choosing whether to refresh on cart change (please do, the script doesn't work once elements unload and reload), and finally shamelessly moved my PayPal donation link to the message text  
+**Best Buy | Cart Saved Items Automation v3.0.2** - Added extra Ti (tie) keywords for 3070Ti and 3080Ti and made keyword checks non case-sensitive.
 
 # Frequently Asked Questions
 **Q: Do scripts work on multiple / non-focused tabs?**  
