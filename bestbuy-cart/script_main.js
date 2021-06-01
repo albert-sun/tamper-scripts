@@ -193,10 +193,10 @@ async function trackSaved() {
             valid = whitelistSKUs.includes(Number(sku));
         } else { // if settings["useSKUWhitelist"].value === false
             const containsWhitelist = whitelistKeywords.filter(
-                keyword => description.includes(keyword)
+                keyword => description.toLowerCase().includes(keyword)
             ).length > 0; // Whether description contains any whitelisted keywords
             const containsBlacklist = blacklistKeywords.filter(
-                keyword => description.includes(keyword)
+                keyword => description.toLowerCase().includes(keyword)
             ).length > 0; // Whether description contains any blacklisted keywords
 
             valid = containsWhitelist === true && containsBlacklist === false;

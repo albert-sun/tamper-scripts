@@ -1,6 +1,6 @@
 const constants = {
     whitelistKeywords: [
-        "3060", "3060ti", "3070", "3070ti", "3080", "3080ti", "3090", "3090ti", "PS5"
+        "3060", "3060ti", "3060 ti", "3070", "3070ti", "3070 ti", "3080", "3080ti", "3080 ti", "3090"
     ],
     blacklistKeywords: [],
     whitelistSKUs: [
