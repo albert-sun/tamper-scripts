@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy - Cart Saved Items Automation
 // @namespace    akito
-// @version      3.0.1
+// @version      3.0.2
 // @author       akito#9528 / Albert Sun
 // @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0/bestbuy-cart/user_interface.js
 // @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0/bestbuy-cart/constants.js
@@ -23,7 +23,7 @@
 /* globals $, __META_LAYER_META_DATA, constants  */
 /* globals generateInterface, generateWindow, designateSettings, designateLogging*/
 
-const scriptVersion = "3.0.1";
+const scriptVersion = "3.0.2";
 const scriptPrefix = "BestBuy-CartSavedItems";
 const scriptText = `Best Buy - Cart Saved Items Automation v${scriptVersion} | akito#9528 / Albert Sun`;
 const messageText = `Thanks and good luck! | <a href="https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD">Donate via PayPal</a>`;
