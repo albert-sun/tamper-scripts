@@ -374,16 +374,16 @@
 }
 
 .akito-input {
-  border: unset;
-  box-sizing: unset;
-  border-radius: unset;
-  -webkit-border-radius: unset;
-  font-size: unset;
-  padding: unset;
-  vertical-align: unset;
-  width: unset;
-  color: unset;
-  box-shadow: unset;
-  line-height: unset;
-  height: unset;
+  border: 1px solid black !important;
+  box-sizing: unset !important;
+  border-radius: unset !important;
+  -webkit-border-radius: unset !important;
+  font-size: unset !important;
+  padding: unset !important;
+  vertical-align: unset !important;
+  width: unset !important;
+  color: unset !important;
+  box-shadow: unset !important;
+  line-height: unset !important;
+  height: unset !important;
 }
