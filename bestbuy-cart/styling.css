@@ -270,6 +270,7 @@
   border-image-source: linear-gradient(to right, tomato, red, tomato, red);
   outline: solid black;
   font-family: "Lucida Sans Unicode";
+  z-index: 1000;
 }
 
 .akito-windowContent {

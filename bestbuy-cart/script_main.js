@@ -130,6 +130,8 @@ async function initialize() {
         loggingFunction(`/!\\ Error parsing whitelisted SKUs: ${err.message}`);
         return false;
     }
+    
+    return true
 }
 
 // Approximates the rendered background color of a given element to a given set of colors.
