@@ -379,7 +379,8 @@
   border-radius: unset !important;
   -webkit-border-radius: unset !important;
   font-size: unset !important;
-  padding: unset !important;
+  padding-left: 5px !important;
+  padding-right: 5px !important;
   vertical-align: unset !important;
   width: unset !important;
   color: unset !important;
