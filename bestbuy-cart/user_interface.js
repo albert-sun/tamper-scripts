@@ -190,6 +190,7 @@ function designateSettings(settingsWindow, settingsDiv, settings) {
         switch(setting.type) {
             case "boolean": // Checkbox
                 const checkbox = document.createElement("input");
+                checkbox.classList.add("akito-input");
                 checkbox.classList.add("akito-black");
                 settingCell.appendChild(checkbox);
                 checkbox.setAttribute("type", "checkbox");
@@ -201,6 +202,7 @@ function designateSettings(settingsWindow, settingsDiv, settings) {
                 break;
             case "number": // Numerical text input
                 const numberInput = document.createElement("input");
+                numberInput.classList.add("akito-input");
                 numberInput.classList.add("akito-black");
                 settingCell.appendChild(numberInput);
                 numberInput.setAttribute("type", "number");
@@ -212,6 +214,7 @@ function designateSettings(settingsWindow, settingsDiv, settings) {
                 break;
             case "string": // String text input 
                 const stringInput = document.createElement("input");
+                stringInput.classList.add("akito-input");
                 stringInput.classList.add("akito-black");
                 settingCell.appendChild(stringInput);
                 stringInput.value = setting.value;
@@ -222,6 +225,7 @@ function designateSettings(settingsWindow, settingsDiv, settings) {
                 break;
             case "button": // Button to click
                 const button = document.createElement("button");
+                button.classList.add("akito-input");
                 button.classList.add("akito-settingsButton");
                 settingCell.appendChild(button);
                 button.innerText = "Click";
@@ -230,6 +234,7 @@ function designateSettings(settingsWindow, settingsDiv, settings) {
                 break;
             case "array": // Currently just string input
                 const arrayInput = document.createElement("input");
+                arrayInput.classList.add("akito-input");
                 arrayInput.classList.add("akito-black");
                 settingCell.appendChild(arrayInput);
 

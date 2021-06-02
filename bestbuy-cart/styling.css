@@ -372,3 +372,18 @@
   height: 24;
   width: 25%;
 }
+
+.akito-input {
+  border: unset;
+  box-sizing: unset;
+  border-radius: unset;
+  -webkit-border-radius: unset;
+  font-size: unset;
+  padding: unset;
+  vertical-align: unset;
+  width: unset;
+  color: unset;
+  box-shadow: unset;
+  line-height: unset;
+  height: unset;
+}
