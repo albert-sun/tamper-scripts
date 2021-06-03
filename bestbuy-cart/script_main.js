@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy - Cart Saved Items Automation
 // @namespace    akito
-// @version      3.0.3
+// @version      3.1.0
 // @author       akito#9528 / Albert Sun
 // @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0/bestbuy-cart/user_interface.js
 // @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0/bestbuy-cart/constants.js
@@ -23,7 +23,7 @@
 /* globals $, __META_LAYER_META_DATA, constants  */
 /* globals generateInterface, generateWindow, designateSettings, designateLogging*/
 
-const scriptVersion = "3.0.3";
+const scriptVersion = "3.1.0";
 const scriptPrefix = "BestBuy-CartSavedItems";
 const scriptText = `Best Buy - Cart Saved Items Automation v${scriptVersion} | akito#9528 / Albert Sun`;
 const messageText = `Thanks and good luck! | <a href="https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD">Donate via PayPal</a>`;
@@ -39,12 +39,13 @@ const settings = {
     "clickTimeout": { index: 5, description: "Timeout between clicks to prevent rate limiting", type: "number", value: 1000 },
     "globalInterval": { index: 6, description: "Global polling interval for updates (milliseconds)", type: "number", value: 250 },
     "clickTimeout": { index: 7, description: "Script timeout when clicking add buttons (milliseconds)", type: "number", value: 1000 },
-    "customNotification": { index: 8, description: "Hotlinking URL for custom notification (empty for default)", type: "string", value: constants.notificationSound },
-    "testNotification": { index: 9, description: "[ Press to test the current notification sound ]", type: "button", value: function() { notificationSound.play() } },
-    "useSKUWhitelist": { index: 10, description: "Override the keyword whitelist with the SKU whitelist", type: "boolean", value: false },
-    "whitelistKeywords": { index: 11, description: "Whitelisted keywords (array)", type: "array", value: constants.whitelistKeywords },
-    "blacklistKeywords": { index: 12, description: "Blacklisted keywords (array)", type: "array", value: constants.blacklistKeywords },
-    "whitelistSKUs": { index: 13, description: "Whitelisted SKUs to track (array, NOT UP-TO-DATE)", type: "array", value: constants.whitelistSKUs },
+    "autoReloadInterval": { index: 8, description: "Automatic page reloading interval (milliseconds, 0 / >= 10000)", type: "number", value: 0 },
+    "customNotification": { index: 9, description: "Hotlinking URL for custom notification (empty for default)", type: "string", value: constants.notificationSound },
+    "testNotification": { index: 10, description: "[ Press to test the current notification sound ]", type: "button", value: function() { notificationSound.play() } },
+    "useSKUWhitelist": { index: 11, description: "Override the keyword whitelist with the SKU whitelist", type: "boolean", value: false },
+    "whitelistKeywords": { index: 12, description: "Whitelisted keywords (array)", type: "array", value: constants.whitelistKeywords },
+    "blacklistKeywords": { index: 13, description: "Blacklisted keywords (array)", type: "array", value: constants.blacklistKeywords },
+    "whitelistSKUs": { index: 14, description: "Whitelisted SKUs to track (array, NOT UP-TO-DATE)", type: "array", value: constants.whitelistSKUs },
     // Note: script currently ignores bundles including the PS5 bundles
 };
 
@@ -130,7 +131,7 @@ async function initialize() {
         loggingFunction(`/!\\ Error parsing whitelisted SKUs: ${err.message}`);
         return false;
     }
-    
+
     return true
 }
 
@@ -325,7 +326,7 @@ async function main() {
 
     loggingFunction("Initializing saved items queue tracker (bundles currently not supported)");
 
-    await trackSaved();
+    trackSaved(); // Run in parallel
 
     loggingFunction("Initializing cart tracker to automatically refresh on contents change");
 
@@ -358,6 +359,14 @@ async function main() {
             __META_LAYER_META_DATA._order = newOrder;
         }
     });
+
+    if(settings.autoReloadInterval.value >= 10000) {
+        loggingFunction(`Queued page auto-reload interval for ${settings.autoReloadInterval.value} milliseconds`);
+
+        setTimeout(function() { location.reload() }, settings.autoReloadInterval.value);
+    } else {
+        loggingFunction("Not queueing auto-reload interval because zero or too short interval");
+    }
 }
 
 (async function() { await main(); }());
