@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         Best Buy - Cart Saved Items Automation
 // @namespace    akito
-// @version      3.1.1
+// @version      3.2.0
 // @author       akito#9528 / Albert Sun
-// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.1/bestbuy-cart/user_interface.js
-// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.1/bestbuy-cart/constants.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.2/bestbuy-cart/user_interface.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.2/bestbuy-cart/constants.js
 // @require      https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js
-// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.1/bestbuy-cart/styling.css
-// @downloadURL  https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.1/bestbuy-cart/script_main.js
-// @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.1/bestbuy-cart/script_main.js
+// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.2/bestbuy-cart/styling.css
+// @downloadURL  https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.2/bestbuy-cart/script_main.user.js
+// @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.2/bestbuy-cart/script_main.user.js
 // @match        https://www.bestbuy.com/cart
 // @antifeature  opt-in anonymous queue metrics
 // @run-at       document-end
@@ -23,7 +23,7 @@
 /* globals $, __META_LAYER_META_DATA, constants  */
 /* globals generateInterface, generateWindow, designateSettings, designateLogging*/
 
-const scriptVersion = "3.1.1";
+const scriptVersion = "3.2.0";
 const scriptPrefix = "BestBuy-CartSavedItems";
 const scriptText = `Best Buy - Cart Saved Items Automation v${scriptVersion} | akito#9528 / Albert Sun`;
 const messageText = `Thanks and good luck! | <a href="https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD">Donate via PayPal</a>`;
