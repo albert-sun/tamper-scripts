@@ -1,12 +1,14 @@
 // ==UserScript==
 // @name         Best Buy - Cart Saved Items Automation
 // @namespace    akito
-// @version      3.0.0
+// @version      3.1.1
 // @author       akito#9528 / Albert Sun
-// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0.0/bestbuy-cart/user_interface.js
-// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0.0/bestbuy-cart/constants.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.1/bestbuy-cart/user_interface.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.1/bestbuy-cart/constants.js
 // @require      https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js
-// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.0.0/bestbuy-cart/styling.css
+// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.1/bestbuy-cart/styling.css
+// @downloadURL  https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.1/bestbuy-cart/script_main.js
+// @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.1/bestbuy-cart/script_main.js
 // @match        https://www.bestbuy.com/cart
 // @antifeature  opt-in anonymous queue metrics
 // @run-at       document-end
@@ -21,33 +23,37 @@
 /* globals $, __META_LAYER_META_DATA, constants  */
 /* globals generateInterface, generateWindow, designateSettings, designateLogging*/
 
-const scriptVersion = "3.0.0";
+const scriptVersion = "3.1.1";
 const scriptPrefix = "BestBuy-CartSavedItems";
 const scriptText = `Best Buy - Cart Saved Items Automation v${scriptVersion} | akito#9528 / Albert Sun`;
-const messageText = "Thanks and good luck! | https://github.com/albert-sun/tamper-scripts";
+const messageText = `Thanks and good luck! | <a href="https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD">Donate via PayPal</a>`;
 
 // Script-specific settings including their descriptions, types, and default values
-// /!\ DO NOT MODIFY AS IT PROBABLY WON'T DO ANYTHING, use the settings popup instead /!\
+// /!\ DO NOT MODIFY AS IT  PROBABLY WON'T DO ANYTHING, use the settings popup instead /!\
 const settings = {
     "allowMetrics": { index: 0, description: "Allow sending of anonymous queue metrics", type: "boolean", value: false },
     "autoAddClick": { index: 1, description: "Auto-click whitelisted buttons when available", type: "boolean", value: true },
     "pauseWhenCarted": { index: 2, description: "Pause interval actions when cart occupied", type: "boolean", value: true },
-    "clickTimeout": { index: 3, description: "Element future click timeout after clicking", type: "number", value: 2500 },
-    "globalInterval": { index: 4, description: "Global polling interval for updates (milliseconds)", type: "number", value: 250 },
-    "clickTimeout": { index: 5, description: "Script timeout when clicking add buttons (milliseconds)", type: "number", value: 1000 },
-    "customNotification": { index: 7, description: "Hotlinking URL for custom notification (empty for default)", type: "string", value: constants.notificationSound },
-    "testNotification": { index: 8, description: "[ Press to test the current notification sound ]", type: "button", value: function() { notificationSound.play() } },
-    "useSKUWhitelist": { index: 8, description: "Override the keyword whitelist with the SKU whitelist", type: "boolean", value: false },
-    "whitelistKeywords": { index: 9, description: "Whitelisted keywords (array)", type: "array", value: constants.whitelistKeywords },
-    "blacklistKeywords": { index: 10, description: "Blacklisted keywords (array)", type: "array", value: constants.blacklistKeywords },
-    "whitelistSKUs": { index: 11, description: "Whitelisted SKUs to track (array, NOT UP-TO-DATE)", type: "array", value: constants.whitelistSKUs },
+    "ignoreFailed": { index: 3, description: "Ignore cart buttons if still clickable after clicked (failed)", type: "boolean", value: false },
+    "refreshCartChange": { index: 4, description: "Refresh the page when cart contents change (recommended)", type: "boolean", value: true },
+    "clickTimeout": { index: 5, description: "Timeout between clicks to prevent rate limiting", type: "number", value: 1000 },
+    "globalInterval": { index: 6, description: "Global polling interval for updates (milliseconds)", type: "number", value: 250 },
+    "clickTimeout": { index: 7, description: "Script timeout when clicking add buttons (milliseconds)", type: "number", value: 1000 },
+    "autoReloadInterval": { index: 8, description: "Automatic page reloading interval (milliseconds, 0 / >= 10000)", type: "number", value: 0 },
+    "customNotification": { index: 9, description: "Hotlinking URL for custom notification (empty for default)", type: "string", value: constants.notificationSound },
+    "testNotification": { index: 10, description: "[ Press to test the current notification sound ]", type: "button", value: function() { notificationSound.play() } },
+    "useSKUWhitelist": { index: 11, description: "Override the keyword whitelist with the SKU whitelist", type: "boolean", value: false },
+    "whitelistKeywords": { index: 12, description: "Whitelisted keywords (array)", type: "array", value: constants.whitelistKeywords },
+    "blacklistKeywords": { index: 13, description: "Blacklisted keywords (array)", type: "array", value: constants.blacklistKeywords },
+    "whitelistSKUs": { index: 14, description: "Whitelisted SKUs to track (array, NOT UP-TO-DATE)", type: "array", value: constants.whitelistSKUs },
     // Note: script currently ignores bundles including the PS5 bundles
 };
 
 // Script-scoped variables, again please don't modify this unless you know what you're doing
-let notificationSound;
-const trackedItems = {}; // button, color, description, timeout
-const sentQueueCodes = []; // For analytics purposes
+const trackedItems = {}; // button, color, description
+const ignoreStatuses = {}; // false = just clicked, true = ignore
+let notificationSound; // Imported from settings
+let sentQueueCodes; // For analytics purposes, imported from storage
 let settingsWindow, settingsDiv, loggingWindow, loggingDiv;
 let loggingFunction = undefined; // Placeholder for initialization
 let whitelistKeywords = [];
@@ -65,6 +71,9 @@ async function sleep(ms) {
 async function initialize() {
     // Load script-wide CSS
     GM_addStyle(GM_getResourceText("css"));
+
+    // Import seen queue codes from storage
+    sentQueueCodes = await GM_getValue(`${scriptPrefix}_sentQueueCodes`, []);
 
     // Generate base script footer for user interface
     generateInterface(scriptText, messageText);
@@ -122,6 +131,8 @@ async function initialize() {
         loggingFunction(`/!\\ Error parsing whitelisted SKUs: ${err.message}`);
         return false;
     }
+
+    return true
 }
 
 // Approximates the rendered background color of a given element to a given set of colors.
@@ -185,10 +196,10 @@ async function trackSaved() {
             valid = whitelistSKUs.includes(Number(sku));
         } else { // if settings["useSKUWhitelist"].value === false
             const containsWhitelist = whitelistKeywords.filter(
-                keyword => description.includes(keyword)
+                keyword => description.toLowerCase().includes(keyword.toLowerCase())
             ).length > 0; // Whether description contains any whitelisted keywords
             const containsBlacklist = blacklistKeywords.filter(
-                keyword => description.includes(keyword)
+                keyword => description.toLowerCase().includes(keyword.toLowerCase())
             ).length > 0; // Whether description contains any blacklisted keywords
 
             valid = containsWhitelist === true && containsBlacklist === false;
@@ -223,32 +234,48 @@ async function trackSaved() {
                 button: button,
                 color: buttonColor,
                 description: description,
-                timeout: false,
             }
         }
     }
 
     // Initializing polling interval with cooldown on click
-    const pollingIntervalID = setInterval(async function() {
+    // Replace asynchronous polling with synchronous polling for delays and stuff
+    while(true) {
         // Check whether cart contains item
         if(__META_LAYER_META_DATA.order.lineItems.length > 0) {
             loggingFunction(`Cart currently has item, cancelling polling interval`);
 
-            clearInterval(pollingIntervalID);
             return;
         }
 
         // Iterate over trackable items, update color, and click if popped
-        for(const [_, trackedInfo] of Object.entries(trackedItems)) {
+        for(const [sku, trackedInfo] of Object.entries(trackedItems)) {
             trackedInfo.color = elementColor(trackedInfo.button);
             if(trackedInfo.color === "white" || trackedInfo.color === "blue" || trackedInfo.color === "yellow") {
                 loggingFunction(`Clickable initial / popped: ${trackedInfo.description}`);
 
-                trackedInfo.button.click(); // Click button obviously
+                // Check current ignore status and process if enabled
+                // TODO: check error message popup instead of doing this ignore stuff
+                if(settings.ignoreFailed.value === true) {
+                    // Undefined = nothing flagged, false = clicked, true = ignore
+                    if(ignoreStatuses[sku] === undefined) {
+                        ignoreStatuses[sku] = false;
+                    } else if(ignoreStatuses[sku] === false) {
+                        ignoreStatuses[sku] = true;
 
-                // Timeout button for given time
-                trackedInfo.timeout = true;
-                setTimeout(function() { trackedInfo.timeout = false }, settings.clickTimeout.value);
+                        continue;
+                    } else if(ignoreStatuses[sku] === true) {
+                        // Flagged to ignore
+                        continue;
+                    }
+                }
+
+                trackedInfo.button.click(); // Click button obviously
+                await sleep(settings.clickTimeout.value);
+            } else {
+                // Remove flag from SKU because successful color flip
+                // Does nothing if undefined property
+                delete ignoreStatuses[sku];
             }
         }
 
@@ -266,16 +293,22 @@ async function trackSaved() {
                     continue;
                 }
                 sentQueueCodes.push(queueData[2]);
+                GM_setValue(`${scriptPrefix}_sentQueueCodes`, sentQueueCodes);
 
                 // Sending repeat queues shouldn't matter that much honestly, Cloudflare is generous?
                 loggingFunction(`Sending queue analytics for saved item with SKU ${sku}`);
-                await fetch("https://bestbuy-analytics.akitocodes.workers.dev/", {
+                await fetch("https://bestbuy-queue-analytics.akitocodes.workers.dev/", {
                     method: "POST",
-                    body: JSON.stringify(bundle),
+                    body: JSON.stringify({
+                        data: bundle,
+                        version: scriptVersion,
+                    }),
                 });
             }
         }
-    }, settings.globalInterval.value)
+
+        await sleep(settings.globalInterval.value)
+    }
 }
 
 // Main function, called using async wrapper below
@@ -293,7 +326,7 @@ async function main() {
 
     loggingFunction("Initializing saved items queue tracker (bundles currently not supported)");
 
-    await trackSaved();
+    trackSaved(); // Run in parallel
 
     loggingFunction("Initializing cart tracker to automatically refresh on contents change");
 
@@ -304,7 +337,7 @@ async function main() {
         get: function() { return __META_LAYER_META_DATA._order; } ,
         set: function(newOrder) {
             try {
-                const oldCartLength = __META_LAYER_META_DATA.order.lineItems.length;
+                const oldCartLength = __META_LAYER_META_DATA.order ? __META_LAYER_META_DATA.order.lineItems.length : 0;
                 const newCartLength = newOrder.lineItems.length;
 
                 if(newCartLength !== oldCartLength) {
@@ -313,7 +346,11 @@ async function main() {
                         notificationSound.play();
                     }
 
-                    setTimeout(function() { location.reload(); }, 1000);
+                    // Only refresh page on cart change if enabled in settings
+                    if(settings.refreshCartChange.value === true) {
+                        // Timeout page reload to let notification sound play fully
+                        setTimeout(function() { location.reload(); }, 1000);
+                    }
                 }
             } catch(err) {
                 loggingFunction(`/!\\ Error from cart setter: ${err.message}`);
@@ -322,6 +359,14 @@ async function main() {
             __META_LAYER_META_DATA._order = newOrder;
         }
     });
+
+    if(settings.autoReloadInterval.value >= 10000) {
+        loggingFunction(`Queued page auto-reload interval for ${settings.autoReloadInterval.value} milliseconds`);
+
+        setTimeout(function() { location.reload() }, settings.autoReloadInterval.value);
+    } else {
+        loggingFunction("Not queueing auto-reload interval because zero or too short interval");
+    }
 }
 
 (async function() { await main(); }());

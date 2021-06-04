@@ -1,6 +1,6 @@
 const constants = {
     whitelistKeywords: [
-        "3060", "3060ti", "3070", "3070ti", "3080", "3080ti", "3090", "3090ti", "PS5"
+        "3060", "3060ti", "3060 ti", "3070", "3070ti", "3070 ti", "3080", "3080ti", "3080 ti", "3090"
     ],
     blacklistKeywords: [],
     whitelistSKUs: [
@@ -14,7 +14,7 @@ const constants = {
         // 3090ti
         6426149, 6430161, // PS5
     ],
-    notificationSound: "https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_3.0.0/resources/notification.mp3?raw=true",
-    settingsIcon: "https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_3.0.0/resources/settings_icon.png?raw=true",
-    loggingIcon: "https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_3.0.0/resources/logging_icon.png?raw=true",
+    notificationSound: "https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_3.0/resources/notification.mp3?raw=true",
+    settingsIcon: "https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_3.0/resources/settings_icon.png?raw=true",
+    loggingIcon: "https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_3.0/resources/logging_icon.png?raw=true",
 }

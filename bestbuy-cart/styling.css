@@ -251,7 +251,7 @@
 
 .akito-headerTitle {
   all: unset;
-  font-family: "Lucida Sans Unicode";
+  font-family: "Lucida Sans Unicode" !important;
   font-size: 16px;
 }
 
@@ -269,7 +269,8 @@
   border-image-slice: 1;
   border-image-source: linear-gradient(to right, tomato, red, tomato, red);
   outline: solid black;
-  font-family: "Lucida Sans Unicode";
+  font-family: "Lucida Sans Unicode" !important;
+  z-index: 1000;
 }
 
 .akito-windowContent {
@@ -310,13 +311,13 @@
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-  font-family: "Lucida Sans Unicode";
+  font-family: "Lucida Sans Unicode" !important;
 }
 
 .akito-scriptInfo {
   all: initial;
   margin: 0;
-  font-family: "Lucida Sans Unicode";
+  font-family: "Lucida Sans Unicode" !important;
   font-size: 16px;
   flex: 1
 }
@@ -325,7 +326,7 @@
 .akito-messageInfo {
   all: initial;
   margin: 0;
-  font-family: "Lucida Sans Unicode";
+  font-family: "Lucida Sans Unicode" !important;
   font-size: 16px;
   text-align: right;
 }
@@ -334,7 +335,7 @@
 .akito-table {
   width: 100%;
   border-spacing: 4px;
-  font-family: "Lucida Sans Unicode";
+  font-family: "Lucida Sans Unicode" !important;
   font-size: 14px;
 }
 
@@ -370,4 +371,20 @@
 .akito-settingsButton {
   height: 24;
   width: 25%;
+}
+
+.akito-input {
+  border: 1px solid black !important;
+  box-sizing: unset !important;
+  border-radius: unset !important;
+  -webkit-border-radius: unset !important;
+  font-size: unset !important;
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+  vertical-align: unset !important;
+  width: unset !important;
+  color: unset !important;
+  box-shadow: unset !important;
+  line-height: unset !important;
+  height: unset !important;
 }
