@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy - Cart Saved Items Automation
 // @namespace    akito
-// @version      3.2.1
+// @version      3.2.2
 // @author       akito#9528 / Albert Sun
 // @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.2/bestbuy-cart/user_interface.js
 // @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.2/bestbuy-cart/constants.js
@@ -23,7 +23,7 @@
 /* globals $, __META_LAYER_META_DATA, constants  */
 /* globals generateInterface, generateWindow, designateSettings, designateLogging*/
 
-const scriptVersion = "3.2.1";
+const scriptVersion = "3.2.2";
 const scriptPrefix = "BestBuy-CartSavedItems";
 const scriptText = `Best Buy - Cart Saved Items Automation v${scriptVersion} | akito#9528 / Albert Sun`;
 const messageText = `Thanks and good luck! | <a href="https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD">Donate via PayPal</a>`;
@@ -114,21 +114,21 @@ async function initialize() {
         whitelistKeywords = settings.whitelistKeywords.value;
         if(Array.isArray(whitelistKeywords) === false) { throw new Error("not an array"); }
     } catch(err) {
-        loggingFunction(`/!\\ Error parsing whitelisted keywords: ${err.message}`);
+        loggingFunction(`/!\\ Error parsing whitelisted keywords: { ${err.message} }`);
         return false;
     }
     try { // Attempt to parse and set blacklisted keywords
         blacklistKeywords = settings.blacklistKeywords.value;
         if(Array.isArray(blacklistKeywords) === false) { throw new Error("not an array"); }
     } catch(err) {
-        loggingFunction(`/!\\ Error parsing blacklisted keywords: ${err.message}`);
+        loggingFunction(`/!\\ Error parsing blacklisted keywords: { ${err.message} }`);
         return false;
     }
     try { // Attempt to parse and set whitelisted SKUs
         whitelistSKUs = settings.whitelistSKUs.value;
         if(Array.isArray(whitelistSKUs) === false) { throw new Error("not an array"); }
     } catch(err) {
-        loggingFunction(`/!\\ Error parsing whitelisted SKUs: ${err.message}`);
+        loggingFunction(`/!\\ Error parsing whitelisted SKUs: { ${err.message} }`);
         return false;
     }
 
@@ -182,7 +182,7 @@ async function trackSaved() {
         .map(descriptionElement => descriptionElement.innerText);
     const savedButtons = $(".saved-items__card-wrapper .btn.btn-block").toArray();
 
-    loggingFunction(`${savedSKUs.length} saved items found, filtering through whitelist and blacklist`);
+    loggingFunction(`{ ${savedSKUs.length} } saved items found, filtering through whitelist and blacklist`);
 
     // Parse keywords / SKUs for each and splice blacklisted or non-whitelisted
     let index = savedSKUs.length;
@@ -207,13 +207,15 @@ async function trackSaved() {
 
         // If don't track item, splice from array
         if(valid === false) {
+            loggingFunction(`Script not tracking { ${description} } as either blacklisted or unwhitelisted`);
+
             savedSKUs.splice(index, 1);
             savedDescriptions.splice(index, 1);
             savedButtons.splice(index, 1);
         }
     }
 
-    loggingFunction(`Finished filtering whitelisted items, ${savedSKUs.length} items remaining`);
+    loggingFunction(`Finished filtering whitelisted items, { ${savedSKUs.length} } items remaining`);
     loggingFunction(`Initializing polling interval for auto-clicking items with clickable buttons`);
 
     // Iterate through remaining and check which ones are clickable / queued
@@ -227,7 +229,7 @@ async function trackSaved() {
         // Honestly ignoring anything that says "Find a Store" since the script can't choose stores
         if(button.innerText === "Add to Cart") {
             if(buttonColor === "grey") {
-                loggingFunction(`Currently queued: ${description}`);
+                loggingFunction(`Currently queued: { ${description} }`);
             }
 
             trackedItems[sku] = {
@@ -252,7 +254,7 @@ async function trackSaved() {
         for(const [sku, trackedInfo] of Object.entries(trackedItems)) {
             trackedInfo.color = elementColor(trackedInfo.button);
             if(trackedInfo.color === "white" || trackedInfo.color === "blue" || trackedInfo.color === "yellow") {
-                loggingFunction(`Clickable initial / popped: ${trackedInfo.description}`);
+                loggingFunction(`Clickable initial / popped: { ${trackedInfo.description} }`);
 
                 // Check current ignore status and process if enabled
                 // TODO: check error message popup instead of doing this ignore stuff
@@ -296,7 +298,7 @@ async function trackSaved() {
                 GM_setValue(`${scriptPrefix}_sentQueueCodes`, sentQueueCodes);
 
                 // Sending repeat queues shouldn't matter that much honestly, Cloudflare is generous?
-                loggingFunction(`Sending queue analytics for saved item with SKU ${sku}`);
+                loggingFunction(`Sending queue analytics for saved item with SKU { ${sku} }`);
                 await fetch("https://bestbuy-queue-analytics.akitocodes.workers.dev/", {
                     method: "POST",
                     body: JSON.stringify({
@@ -356,7 +358,7 @@ async function main() {
                     }
                 }
             } catch(err) {
-                loggingFunction(`/!\\ Error from cart setter: ${err.message}`);
+                loggingFunction(`/!\\ Error from cart setter: { ${err.message} }`);
             }
 
             __META_LAYER_META_DATA._order = newOrder;
@@ -364,7 +366,7 @@ async function main() {
     });
 
     if(settings.autoReloadInterval.value >= 10000) {
-        loggingFunction(`Queued page auto-reload interval for ${settings.autoReloadInterval.value} milliseconds`);
+        loggingFunction(`Queued page auto-reload interval for { ${settings.autoReloadInterval.value} } milliseconds`);
 
         setTimeout(function() { location.reload() }, settings.autoReloadInterval.value);
     } else {
