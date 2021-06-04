@@ -337,7 +337,7 @@ async function main() {
         get: function() { return __META_LAYER_META_DATA._order; } ,
         set: function(newOrder) {
             try {
-                const oldCartLength = __META_LAYER_META_DATA.order.lineItems.length;
+                const oldCartLength = __META_LAYER_META_DATA.order ? __META_LAYER_META_DATA.order.lineItems.length : 0;
                 const newCartLength = newOrder.lineItems.length;
 
                 if(newCartLength !== oldCartLength) {
