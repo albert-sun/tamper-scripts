@@ -332,6 +332,7 @@ async function main() {
 
     // Attach setter to cart order to receive callback whenever contents change
     // Reload the page whenever the cart contents change since saved elements unload and reload
+    let initialCartLoad = false; // To prevent refreshing on page load
     __META_LAYER_META_DATA._order = __META_LAYER_META_DATA.order;
     Object.defineProperty(__META_LAYER_META_DATA, "order", {
         get: function() { return __META_LAYER_META_DATA._order; } ,
@@ -347,9 +348,11 @@ async function main() {
                     }
 
                     // Only refresh page on cart change if enabled in settings
-                    if(settings.refreshCartChange.value === true) {
+                    if(settings.refreshCartChange.value === true && initialCartLoad === true) {
                         // Timeout page reload to let notification sound play fully
                         setTimeout(function() { location.reload(); }, 1000);
+                    } else if(initialCartLoad === false) {
+                        initialCartLoad = true;
                     }
                 }
             } catch(err) {
