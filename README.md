@@ -25,7 +25,7 @@ A collection (currently just one though) of Tampermonkey userscripts primarily c
 **Best Buy | Cart Saved Items Automation v3.0.2** - Added extra Ti (tie) keywords for 3070Ti and 3080Ti and made keyword checks non case-sensitive  
 **Best Buy | Cart Saved Items Automation v3.0.3** - Fixed the keyword whitelisting so they would work properly (forgot to lowercase keywords)  
 **Best Buy | Cart Saved Items Automation v3.1.0** - Re-added auto refreshing (use at your own risk) and fixed notify sound not playing  
-**Best Buy | Cart Saved Items Automation v3.1.1** - Fixed the lineItems error showing on script load, confirmed it wasn't important anyway
+**Best Buy | Cart Saved Items Automation v3.1.1** - Fixed the lineItems error showing on script load, confirmed it wasn't important anyway  
 **Best Buy | Cart Saved Items Automation v3.2.0** - Created new branch, changed script name for auto Tampermonkey installation (nice)
 
 # Frequently Asked Questions
