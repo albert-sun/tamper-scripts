@@ -20,13 +20,13 @@ A collection (currently just one though) of Tampermonkey userscripts primarily c
 |**Best Buy**<br>Cart Saved Items Automation|[2.4.0](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.4.0/bestbuy-cart/script_main.js)<br>[2.5.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.5/bestbuy-cart/script_main.js)<br>[2.6.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.6/bestbuy-cart/script_main.js)<br>[3.0.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_3.0/bestbuy-cart/script_main.js)<br>[3.1.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_3.1/bestbuy-cart/script_main.js)<br>[3.2.X](https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.2/bestbuy-cart/script_main.user.js)|Cart page<br><br>**NOT THE SAVED ITEMS PAGE**|<ul><li>~~Simple adblock detection and notification (having adblock sometimes messes with website functionality)<li>Automatic interval page reloading for refreshing availability on sold out or unavailable products~~</li><li>Keyword whitelist, keyword blacklist, and SKU whitelist for processing saved items (note that bundles aren't shown on the cart saved items display, sorry!)</li><li>Automatic add-to-cart button clicking when available along with audio notification whenever item is successfully added to cart</li></ul>|
 
 # Changelog
-**Best Buy | Cart Saved Items Automation v3.0.1** - Made polling synchronous, (untested) added button ignoring and timeouts to fix script hanging, (untested) added setting for choosing whether to refresh on cart change (please do, the script doesn't work once elements unload and reload), and finally shamelessly moved my PayPal donation link to the message text  
 **Best Buy | Cart Saved Items Automation v3.0.2** - Added extra Ti (tie) keywords for 3070Ti and 3080Ti and made keyword checks non case-sensitive  
 **Best Buy | Cart Saved Items Automation v3.0.3** - Fixed the keyword whitelisting so they would work properly (forgot to lowercase keywords)  
 **Best Buy | Cart Saved Items Automation v3.1.0** - Re-added auto refreshing (use at your own risk) and fixed notify sound not playing  
 **Best Buy | Cart Saved Items Automation v3.1.1** - Fixed the lineItems error showing on script load, confirmed it wasn't important anyway  
 **Best Buy | Cart Saved Items Automation v3.2.0** - Created new branch, changed script name for auto Tampermonkey installation (nice)  
-**Best Buy | Cart Saved Items Automation v3.2.1** - Fixed infinite page reloading when something was inside the cart
+**Best Buy | Cart Saved Items Automation v3.2.1** - Fixed infinite page reloading when something was inside the cart  
+**Best Buy | Cart Saved Items Automation v3.2.2** - Added logging when items are not tracked because of whitelist / blacklist
 
 # Frequently Asked Questions
 **Q: Do scripts work on multiple / non-focused tabs?**  
