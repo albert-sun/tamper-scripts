@@ -11,13 +11,13 @@ A collection (currently just one though) of Tampermonkey userscripts primarily c
 
 # Installation  
 1. Install the TamperMonkey extension for Chrome / derivates or Firefox.
-2. Copy the source for **only the main script** linked within [Current Scripts](<https://github.com/albert-sun/tamper-scripts#Current-Scripts>) and paste it into Tampermonkey as a new userscript. Ensure that the script is properly saved afterwards.
+2. Copy the source for **only the main script** linked within [Current Scripts](<https://github.com/albert-sun/tamper-scripts#Current-Scripts>) and paste it into Tampermonkey as a new userscript. Ensure that the script is properly saved afterwards. **For versions 3.2.X and above, you only have to click "3.2.X" in the versions table below and it should automatically open a new tab for installation.**  
 3. Verify that the script is working properly by navigating to a script-enabled page and checking for the red-orange footer.
 
 # Current Scripts
 |Script|Versions|Page Scope|Features|
 |----------------|:------------:|------------------------|--------|
-|**Best Buy**<br>Cart Saved Items Automation|[2.4.0](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.4.0/bestbuy-cart/script_main.js)<br>[2.5.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.5/bestbuy-cart/script_main.js)<br>[2.6.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.6/bestbuy-cart/script_main.js)<br>[3.0.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_3.0/bestbuy-cart/script_main.js)<br>[3.1.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_3.1/bestbuy-cart/script_main.js)|Cart page<br><br>**NOT THE SAVED ITEMS PAGE**|<ul><li>~~Simple adblock detection and notification (having adblock sometimes messes with website functionality)<li>Automatic interval page reloading for refreshing availability on sold out or unavailable products~~</li><li>Keyword whitelist, keyword blacklist, and SKU whitelist for processing saved items (note that bundles aren't shown on the cart saved items display, sorry!)</li><li>Automatic add-to-cart button clicking when available along with audio notification whenever item is successfully added to cart</li></ul>|
+|**Best Buy**<br>Cart Saved Items Automation|[2.4.0](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.4.0/bestbuy-cart/script_main.js)<br>[2.5.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.5/bestbuy-cart/script_main.js)<br>[2.6.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_2.6/bestbuy-cart/script_main.js)<br>[3.0.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_3.0/bestbuy-cart/script_main.js)<br>[3.1.X](https://github.com/albert-sun/tamper-scripts/blob/bestbuy-cart_3.1/bestbuy-cart/script_main.js)<br>[3.2.X](https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.2/bestbuy-cart/script_main.user.js)|Cart page<br><br>**NOT THE SAVED ITEMS PAGE**|<ul><li>~~Simple adblock detection and notification (having adblock sometimes messes with website functionality)<li>Automatic interval page reloading for refreshing availability on sold out or unavailable products~~</li><li>Keyword whitelist, keyword blacklist, and SKU whitelist for processing saved items (note that bundles aren't shown on the cart saved items display, sorry!)</li><li>Automatic add-to-cart button clicking when available along with audio notification whenever item is successfully added to cart</li></ul>|
 
 # Changelog
 **Best Buy | Cart Saved Items Automation v3.0.0** (renamed) - Complete recode trimming some functions while adding others. Most important features: opt-in anonymous queue analytics and forced refresh on cart contents change  
@@ -26,6 +26,7 @@ A collection (currently just one though) of Tampermonkey userscripts primarily c
 **Best Buy | Cart Saved Items Automation v3.0.3** - Fixed the keyword whitelisting so they would work properly (forgot to lowercase keywords)  
 **Best Buy | Cart Saved Items Automation v3.1.0** - Re-added auto refreshing (use at your own risk) and fixed notify sound not playing  
 **Best Buy | Cart Saved Items Automation v3.1.1** - Fixed the lineItems error showing on script load, confirmed it wasn't important anyway
+**Best Buy | Cart Saved Items Automation v3.2.0** - Created new branch, changed script name for auto Tampermonkey installation (nice)
 
 # Frequently Asked Questions
 **Q: Do scripts work on multiple / non-focused tabs?**  
