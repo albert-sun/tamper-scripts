@@ -258,8 +258,7 @@
 /* left, width, and height defined externally */
 .akito-window {
   position: fixed;
-  left: 3px;
-  bottom: 29px;
+  bottom: 34px;
   width: 800px;
   height: 400px;
   padding: 4px;
@@ -268,7 +267,6 @@
   border-image: 5px;
   border-image-slice: 1;
   border-image-source: linear-gradient(to right, tomato, red, tomato, red);
-  outline: solid black;
   font-family: "Lucida Sans Unicode" !important;
   z-index: 1000;
 }
@@ -346,7 +344,18 @@
 .akito-copyDiv {
   position: relative;
   left: 700px;
-  top: 295px;
+  top: 240px;
+  width: 50px;
+  height: 50px;
+  padding: 6px;
+  background-image: linear-gradient(to bottom right, red, tomato);
+  border-radius: 16px;
+}
+
+.akito-trashDiv {
+  position: relative;
+  left: 700px;
+  top: 245px;
   width: 50px;
   height: 50px;
   padding: 6px;

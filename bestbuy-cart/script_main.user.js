@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         Best Buy - Cart Saved Items Automation
 // @namespace    akito
-// @version      3.1.1
+// @version      3.3.0
 // @author       akito#9528 / Albert Sun
-// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.1/bestbuy-cart/user_interface.js
-// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.1/bestbuy-cart/constants.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.3/bestbuy-cart/user_interface.js
+// @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.3/bestbuy-cart/constants.js
 // @require      https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js
-// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.1/bestbuy-cart/styling.css
-// @downloadURL  https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.1/bestbuy-cart/script_main.js
-// @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.1/bestbuy-cart/script_main.js
+// @resource css https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.3/bestbuy-cart/styling.css
+// @downloadURL  https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.3/bestbuy-cart/script_main.user.js
+// @updateURL    https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.3/bestbuy-cart/script_main.user.js
 // @match        https://www.bestbuy.com/cart
 // @antifeature  opt-in anonymous queue metrics
 // @run-at       document-end
@@ -23,7 +23,7 @@
 /* globals $, __META_LAYER_META_DATA, constants  */
 /* globals generateInterface, generateWindow, designateSettings, designateLogging*/
 
-const scriptVersion = "3.1.1";
+const scriptVersion = "3.3.0";
 const scriptPrefix = "BestBuy-CartSavedItems";
 const scriptText = `Best Buy - Cart Saved Items Automation v${scriptVersion} | akito#9528 / Albert Sun`;
 const messageText = `Thanks and good luck! | <a href="https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD">Donate via PayPal</a>`;
@@ -105,7 +105,7 @@ async function initialize() {
     [settingsWindow, settingsDiv] = generateWindow(constants.settingsIcon, "Settings (updates on reload)", 800, 400, true);
     [loggingWindow, loggingDiv] = generateWindow(constants.loggingIcon, "Logging", 800, 400, true);
     designateSettings(settingsWindow, settingsDiv, settings);
-    loggingFunction = designateLogging(loggingWindow, loggingDiv);
+    loggingFunction = await designateLogging(loggingWindow, loggingDiv);
 
     loggingFunction("Finished initializing script user interface");
 
@@ -114,21 +114,21 @@ async function initialize() {
         whitelistKeywords = settings.whitelistKeywords.value;
         if(Array.isArray(whitelistKeywords) === false) { throw new Error("not an array"); }
     } catch(err) {
-        loggingFunction(`/!\\ Error parsing whitelisted keywords: ${err.message}`);
+        loggingFunction(`/!\\ Error parsing whitelisted keywords: <b>${err.message}</b>`);
         return false;
     }
     try { // Attempt to parse and set blacklisted keywords
         blacklistKeywords = settings.blacklistKeywords.value;
         if(Array.isArray(blacklistKeywords) === false) { throw new Error("not an array"); }
     } catch(err) {
-        loggingFunction(`/!\\ Error parsing blacklisted keywords: ${err.message}`);
+        loggingFunction(`/!\\ Error parsing blacklisted keywords: <b>${err.message}</b>`);
         return false;
     }
     try { // Attempt to parse and set whitelisted SKUs
         whitelistSKUs = settings.whitelistSKUs.value;
         if(Array.isArray(whitelistSKUs) === false) { throw new Error("not an array"); }
     } catch(err) {
-        loggingFunction(`/!\\ Error parsing whitelisted SKUs: ${err.message}`);
+        loggingFunction(`/!\\ Error parsing whitelisted SKUs: <b>${err.message}</b>`);
         return false;
     }
 
@@ -182,7 +182,7 @@ async function trackSaved() {
         .map(descriptionElement => descriptionElement.innerText);
     const savedButtons = $(".saved-items__card-wrapper .btn.btn-block").toArray();
 
-    loggingFunction(`${savedSKUs.length} saved items found, filtering through whitelist and blacklist`);
+    loggingFunction(`<b>${savedSKUs.length}</b> saved items found, filtering through whitelist and blacklist`);
 
     // Parse keywords / SKUs for each and splice blacklisted or non-whitelisted
     let index = savedSKUs.length;
@@ -207,13 +207,15 @@ async function trackSaved() {
 
         // If don't track item, splice from array
         if(valid === false) {
+            loggingFunction(`Script not tracking <b>${description}</b> as product is either unwhitelisted or blacklisted`);
+
             savedSKUs.splice(index, 1);
             savedDescriptions.splice(index, 1);
             savedButtons.splice(index, 1);
         }
     }
 
-    loggingFunction(`Finished filtering whitelisted items, ${savedSKUs.length} items remaining`);
+    loggingFunction(`Finished filtering whitelisted items, <b>${savedSKUs.length}</b> items remaining`);
     loggingFunction(`Initializing polling interval for auto-clicking items with clickable buttons`);
 
     // Iterate through remaining and check which ones are clickable / queued
@@ -227,7 +229,7 @@ async function trackSaved() {
         // Honestly ignoring anything that says "Find a Store" since the script can't choose stores
         if(button.innerText === "Add to Cart") {
             if(buttonColor === "grey") {
-                loggingFunction(`Currently queued: ${description}`);
+                loggingFunction(`Currently queued: <b>${description}</b>`);
             }
 
             trackedItems[sku] = {
@@ -252,7 +254,7 @@ async function trackSaved() {
         for(const [sku, trackedInfo] of Object.entries(trackedItems)) {
             trackedInfo.color = elementColor(trackedInfo.button);
             if(trackedInfo.color === "white" || trackedInfo.color === "blue" || trackedInfo.color === "yellow") {
-                loggingFunction(`Clickable initial / popped: ${trackedInfo.description}`);
+                loggingFunction(`Clickable initial / popped: <b>${trackedInfo.description}</b>`);
 
                 // Check current ignore status and process if enabled
                 // TODO: check error message popup instead of doing this ignore stuff
@@ -296,7 +298,7 @@ async function trackSaved() {
                 GM_setValue(`${scriptPrefix}_sentQueueCodes`, sentQueueCodes);
 
                 // Sending repeat queues shouldn't matter that much honestly, Cloudflare is generous?
-                loggingFunction(`Sending queue analytics for saved item with SKU ${sku}`);
+                loggingFunction(`Sending queue analytics for saved item with SKU <b>${sku}</b>`);
                 await fetch("https://bestbuy-queue-analytics.akitocodes.workers.dev/", {
                     method: "POST",
                     body: JSON.stringify({
@@ -332,6 +334,7 @@ async function main() {
 
     // Attach setter to cart order to receive callback whenever contents change
     // Reload the page whenever the cart contents change since saved elements unload and reload
+    let initialCartLoad = false; // To prevent refreshing on page load
     __META_LAYER_META_DATA._order = __META_LAYER_META_DATA.order;
     Object.defineProperty(__META_LAYER_META_DATA, "order", {
         get: function() { return __META_LAYER_META_DATA._order; } ,
@@ -347,13 +350,15 @@ async function main() {
                     }
 
                     // Only refresh page on cart change if enabled in settings
-                    if(settings.refreshCartChange.value === true) {
+                    if(settings.refreshCartChange.value === true && initialCartLoad === true) {
                         // Timeout page reload to let notification sound play fully
                         setTimeout(function() { location.reload(); }, 1000);
+                    } else if(initialCartLoad === false) {
+                        initialCartLoad = true;
                     }
                 }
             } catch(err) {
-                loggingFunction(`/!\\ Error from cart setter: ${err.message}`);
+                loggingFunction(`/!\\ Error from cart setter: <b>${err.message}</b>`);
             }
 
             __META_LAYER_META_DATA._order = newOrder;
@@ -361,7 +366,7 @@ async function main() {
     });
 
     if(settings.autoReloadInterval.value >= 10000) {
-        loggingFunction(`Queued page auto-reload interval for ${settings.autoReloadInterval.value} milliseconds`);
+        loggingFunction(`Queued page auto-reload interval for <b>${settings.autoReloadInterval.value}</b> milliseconds`);
 
         setTimeout(function() { location.reload() }, settings.autoReloadInterval.value);
     } else {
