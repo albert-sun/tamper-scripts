@@ -344,8 +344,12 @@ async function main() {
                 const newCartLength = newOrder.lineItems.length;
 
                 if(newCartLength !== oldCartLength) {
+                    loggingFunction(`Detected cart length change: <b>${oldCartLength}</b> -> <b>${newCartLength}</b>`);
+
                     // Play notification sound when item added to cart
                     if(newCartLength > oldCartLength) {
+                        loggingFunction(`Product added to cart, playing default or custom notification sound`);
+
                         notificationSound.play();
                     }
 

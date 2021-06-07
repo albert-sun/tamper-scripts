@@ -291,8 +291,8 @@ async function designateLogging(loggingWindow, contentDiv) {
     // @param {string} message
     const loggingFunction = async function(message, time = (new Date()), fromCached = false) {
         const row = document.createElement("tr");
-        message = message.replace("<b>", `<strong style="font-weight:bold !important">`);
-        message = message.replace("</b>", `</strong>`); // Add manual bolding support
+        message = message.replaceAll("<b>", `<strong style="font-weight:bold !important">`);
+        message = message.replaceAll("</b>", `</strong>`); // Add manual bolding support
 
         // Generate timestamp cell
         const timestamp = "[" + (time).toTimeString().split(' ')[0] + "]";
