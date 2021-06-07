@@ -251,54 +251,90 @@ function designateSettings(settingsWindow, settingsDiv, settings) {
 // Designates div for logging and generates table appending function
 // @param {DOMElement} contentDiv
 // @returns {function}
-function designateLogging(window, contentDiv) {
+async function designateLogging(loggingWindow, contentDiv) {
     // Initialize wrapper table element
     const loggingTable = document.createElement("table");
     contentDiv.appendChild(loggingTable);
     loggingTable.classList.add("akito-table");
 
-    // Initialize wrapper copy button div
+    // Initialize wrapper copy button 
     const copyDiv = document.createElement("div");
     copyDiv.classList.add("akito-copyDiv");
-    window.appendChild(copyDiv);
-
-    // Initialize copy button element
-    const copyClick = document.createElement("a");
+    loggingWindow.appendChild(copyDiv);
+    const copyClick = document.createElement("a"); 
     copyClick.classList.add("akito-copyClick");
     copyClick.href = "#";
     copyDiv.appendChild(copyClick);
-
-    // Initialize icon for logging copy button
     const copyImage = document.createElement("img");
     copyImage.classList.add("akito-copyImage");
     copyClick.appendChild(copyImage);
     copyImage.src = "https://image.flaticon.com/icons/png/512/88/88026.png";
 
+    // Initialize wrapper trash button
+    const trashDiv = document.createElement("div");
+    trashDiv.classList.add("akito-trashDiv");
+    loggingWindow.appendChild(trashDiv);
+    const trashClick = document.createElement("a"); 
+    trashClick.classList.add("akito-copyClick");
+    trashClick.href = "#";
+    trashDiv.appendChild(trashClick);
+    const trashImage = document.createElement("img");
+    trashImage.classList.add("akito-copyImage");
+    trashClick.appendChild(trashImage);
+    trashImage.src = "https://cdn2.iconfinder.com/data/icons/cleaning-19/30/30x30-10-512.png";
+
+    // Retrieve logging data from Tampermonkey storage
+    let logsData = await GM_getValue(`${scriptPrefix}_cachedLogs`, []);
+    logsData = logsData.slice(0, 250); // Limit number of displayed logs to 250?
+
     // Generates timestamp and appends to logging table
     // @param {string} message
-    const loggingFunction = async function(message) {
+    const loggingFunction = async function(message, time = (new Date()), fromCached = false) {
         const row = document.createElement("tr");
+        message = message.replace("<b>", `<strong style="font-weight:bold !important">`);
+        message = message.replace("</b>", `</strong>`); // Add manual bolding support
 
         // Generate timestamp cell
-        const timestamp = "[" + (new Date()).toTimeString().split(' ')[0] + "]";
+        const timestamp = "[" + (time).toTimeString().split(' ')[0] + "]";
         const loggingCell = document.createElement("td");
         loggingCell.classList.add("akito-black");
         row.appendChild(loggingCell);
-        loggingCell.innerHTML= `<strong style="font-weight:bold !important">${timestamp}</strong> ${message}`;
+        loggingCell.innerHTML = `<strong style="font-weight:bold !important">${timestamp}</strong> ${message}`;
 
         loggingTable.insertBefore(row, loggingTable.firstChild);
+
+        // Update cached logs if fresh
+        if(fromCached === false) {
+            logsData.push({ timestamp: time, message: message });
+            await GM_setValue(`${scriptPrefix}_cachedLogs`, logsData);
+        }
     }
 
+    // Display previously cached logs via logging function
+    for(const logData of logsData) {
+        loggingFunction(logData.message, new Date(logData.timestamp), true);
+    }
+
+    // Delimit previous logs, don't show POST data
+    loggingFunction(`== ${location.href.split("?")[0]} ==`); 
+
     // Setup copy function (logs as well)
-    copyClick.onclick = function() { 
+    copyClick.onclick = async function() { 
         let copyString = "";
         for(const row of loggingTable.childNodes) {
             copyString += row.innerText + "\n";
         }
         GM_setClipboard(copyString);
 
-        loggingFunction("Copied debug logs to clipboard");
+        loggingFunction("Successfully copied logs to clipboard");
     };
+
+    // Setup trash function (logs as well)
+    trashClick.onclick = async function() {
+        logsData = []; // Clear existing logs and update
+        await GM_setValue(`${scriptPrefix}_cachedLogs`, logsData); 
+        loggingTable.innerHTML = ""; // Clear data from logging "console"
+    }
 
     return loggingFunction;
 }
