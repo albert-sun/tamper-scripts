@@ -316,7 +316,7 @@ async function designateLogging(loggingWindow, contentDiv) {
     }
 
     // Delimit previous logs, don't show POST data
-    loggingFunction(`== ${location.href} ==`); 
+    loggingFunction(`<b>== ${location.href} ==</b>`); 
 
     // Setup copy function (logs as well)
     copyClick.onclick = async function() { 
