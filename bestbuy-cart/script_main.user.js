@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy - Cart Saved Items Automation
 // @namespace    akito
-// @version      3.3.0
+// @version      3.3.1
 // @author       akito#9528 / Albert Sun
 // @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.3/bestbuy-cart/user_interface.js
 // @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.3/bestbuy-cart/constants.js
@@ -23,7 +23,7 @@
 /* globals $, __META_LAYER_META_DATA, constants  */
 /* globals generateInterface, generateWindow, designateSettings, designateLogging*/
 
-const scriptVersion = "3.3.0";
+const scriptVersion = "3.3.1";
 const scriptPrefix = "BestBuy-CartSavedItems";
 const scriptText = `Best Buy - Cart Saved Items Automation v${scriptVersion} | akito#9528 / Albert Sun`;
 const messageText = `Thanks and good luck! | <a href="https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD">Donate via PayPal</a>`;
@@ -111,14 +111,14 @@ async function initialize() {
 
     // Validate settings once logging function is initialized
     try { // Attempt to parse and set whitelisted keywords
-        whitelistKeywords = settings.whitelistKeywords.value;
+        whitelistKeywords = settings.whitelistKeywords.value.filter(word => word != "");
         if(Array.isArray(whitelistKeywords) === false) { throw new Error("not an array"); }
     } catch(err) {
         loggingFunction(`/!\\ Error parsing whitelisted keywords: <b>${err.message}</b>`);
         return false;
     }
     try { // Attempt to parse and set blacklisted keywords
-        blacklistKeywords = settings.blacklistKeywords.value;
+        blacklistKeywords = settings.blacklistKeywords.value.filter(word => word != "");
         if(Array.isArray(blacklistKeywords) === false) { throw new Error("not an array"); }
     } catch(err) {
         loggingFunction(`/!\\ Error parsing blacklisted keywords: <b>${err.message}</b>`);
