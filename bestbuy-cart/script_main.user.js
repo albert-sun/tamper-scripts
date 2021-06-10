@@ -322,7 +322,7 @@ async function trackSaved() {
         // Queue data can't be transported even between sessions, believe me I've tried...
         if(settings.allowMetrics.value === true) {
             // Retrieve current queues from page laod and send queue information
-            const queuesData = JSON.parse(atob(localStorage.getItem("purchaseTracker"))) || {};
+            const queuesData = JSON.parse(atob(localStorage.getItem("purchaseTracker") || "e30="));
             for(const [sku, queueData] of Object.entries(queuesData)) {
                 const bundle = [sku, ...queueData]; // SKU and queue data
 
