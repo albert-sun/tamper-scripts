@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy - Cart Saved Items Automation
 // @namespace    akito
-// @version      3.3.1
+// @version      3.3.2
 // @author       akito#9528 / Albert Sun
 // @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.3/bestbuy-cart/user_interface.js
 // @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.3/bestbuy-cart/constants.js
@@ -23,7 +23,7 @@
 /* globals $, __META_LAYER_META_DATA, constants  */
 /* globals generateInterface, generateWindow, designateSettings, designateLogging*/
 
-const scriptVersion = "3.3.1";
+const scriptVersion = "3.3.2";
 const scriptPrefix = "BestBuy-CartSavedItems";
 const scriptText = `Best Buy - Cart Saved Items Automation v${scriptVersion} | akito#9528 / Albert Sun`;
 const messageText = `Thanks and good luck! | <a href="https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD">Donate via PayPal</a>`;
@@ -182,6 +182,42 @@ async function trackSaved() {
         .map(descriptionElement => descriptionElement.innerText);
     const savedButtons = $(".saved-items__card-wrapper .btn.btn-block").toArray();
 
+    loggingFunction("Initializing cart tracker to automatically refresh on contents change");
+
+    // Attach setter to cart order to receive callback whenever contents change
+    // Reload the page whenever the cart contents change since saved elements unload and reload
+    __META_LAYER_META_DATA._order = __META_LAYER_META_DATA.order;
+    Object.defineProperty(__META_LAYER_META_DATA, "order", {
+        get: function() { return __META_LAYER_META_DATA._order; } ,
+        set: function(newOrder) {
+            try {
+                const oldCartLength = __META_LAYER_META_DATA.order ? __META_LAYER_META_DATA.order.lineItems.length : 0;
+                const newCartLength = newOrder.lineItems.length;
+
+                if(newCartLength !== oldCartLength) {
+                    loggingFunction(`Detected cart length change: <b>${oldCartLength}</b> -> <b>${newCartLength}</b>`);
+
+                    // Play notification sound when item added to cart
+                    if(newCartLength > oldCartLength) {
+                        loggingFunction(`Product added to cart, playing default or custom notification sound`);
+
+                        notificationSound.play();
+                    }
+
+                    // Only refresh page on cart change if enabled in settings
+                    if(settings.refreshCartChange.value === true) {
+                        // Timeout page reload to let notification sound play fully
+                        setTimeout(function() { location.reload(); }, 1000);
+                    }
+                }
+            } catch(err) {
+                loggingFunction(`/!\\ Error from cart setter: <b>${err.message}</b>`);
+            }
+
+            __META_LAYER_META_DATA._order = newOrder;
+        }
+    });
+
     loggingFunction(`<b>${savedSKUs.length}</b> saved items found, filtering through whitelist and blacklist`);
 
     // Parse keywords / SKUs for each and splice blacklisted or non-whitelisted
@@ -329,45 +365,6 @@ async function main() {
     loggingFunction("Initializing saved items queue tracker (bundles currently not supported)");
 
     trackSaved(); // Run in parallel
-
-    loggingFunction("Initializing cart tracker to automatically refresh on contents change");
-
-    // Attach setter to cart order to receive callback whenever contents change
-    // Reload the page whenever the cart contents change since saved elements unload and reload
-    let initialCartLoad = false; // To prevent refreshing on page load
-    __META_LAYER_META_DATA._order = __META_LAYER_META_DATA.order;
-    Object.defineProperty(__META_LAYER_META_DATA, "order", {
-        get: function() { return __META_LAYER_META_DATA._order; } ,
-        set: function(newOrder) {
-            try {
-                const oldCartLength = __META_LAYER_META_DATA.order ? __META_LAYER_META_DATA.order.lineItems.length : 0;
-                const newCartLength = newOrder.lineItems.length;
-
-                if(newCartLength !== oldCartLength) {
-                    loggingFunction(`Detected cart length change: <b>${oldCartLength}</b> -> <b>${newCartLength}</b>`);
-
-                    // Play notification sound when item added to cart
-                    if(newCartLength > oldCartLength) {
-                        loggingFunction(`Product added to cart, playing default or custom notification sound`);
-
-                        notificationSound.play();
-                    }
-
-                    // Only refresh page on cart change if enabled in settings
-                    if(settings.refreshCartChange.value === true && initialCartLoad === true) {
-                        // Timeout page reload to let notification sound play fully
-                        setTimeout(function() { location.reload(); }, 1000);
-                    } else if(initialCartLoad === false) {
-                        initialCartLoad = true;
-                    }
-                }
-            } catch(err) {
-                loggingFunction(`/!\\ Error from cart setter: <b>${err.message}</b>`);
-            }
-
-            __META_LAYER_META_DATA._order = newOrder;
-        }
-    });
 
     if(settings.autoReloadInterval.value >= 10000) {
         loggingFunction(`Queued page auto-reload interval for <b>${settings.autoReloadInterval.value}</b> milliseconds`);
