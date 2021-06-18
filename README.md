@@ -5,7 +5,7 @@ A collection (currently just one though) of Tampermonkey userscripts primarily c
 
 ⚠️ **DO NOT download anything straight from the main branch as it could be outdated (I only pull request major and minor script versions)**.⚠️  
 
-[Join the Discord server](<https://discord.com/channels/767566223729754122/847824352647970826/849044131509829722>)  
+[Join the Discord server](<https://discord.gg/NbpBbUSp>)  
 **Twitch (direct message):** AkitoApocalypse  
 [Donate via PayPal](<https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD>) | 1KgcytPHXNwboNbXUN3ZyuASDZWt8Qcf1t | 0xAf9EB617c81B050517E9A8826E4c93DcC182AeaD
 
