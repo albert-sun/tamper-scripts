@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Best Buy - Cart Saved Items Automation
 // @namespace    akito
-// @version      3.3.2
+// @version      3.3.3
 // @author       akito#9528 / Albert Sun
 // @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.3/bestbuy-cart/user_interface.js
 // @require      https://raw.githubusercontent.com/albert-sun/tamper-scripts/bestbuy-cart_3.3/bestbuy-cart/constants.js
@@ -23,7 +23,7 @@
 /* globals $, __META_LAYER_META_DATA, constants  */
 /* globals generateInterface, generateWindow, designateSettings, designateLogging*/
 
-const scriptVersion = "3.3.2";
+const scriptVersion = "3.3.3";
 const scriptPrefix = "BestBuy-CartSavedItems";
 const scriptText = `Best Buy - Cart Saved Items Automation v${scriptVersion} | akito#9528 / Albert Sun`;
 const messageText = `Thanks and good luck! | <a href="https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD">Donate via PayPal</a>`;
@@ -278,7 +278,28 @@ async function trackSaved() {
 
     // Initializing polling interval with cooldown on click
     // Replace asynchronous polling with synchronous polling for delays and stuff
+    let notifiedBrokenQueue = false;
     while(true) {
+        // Fix broken queues changing false => true (requires reload)
+        let queues = JSON.parse(atob(localStorage.getItem("purchaseTracker") || "e30="));
+        let hasBrokenQueue = false;
+        for(const [key, _] of Object.entries(queues)) {
+            if(queues[key][3] === false) {
+                loggingFunction(`Broken queue for SKU ${key}, fixing...`);
+                queues[key][3] = true;
+                hasBrokenQueue = true;
+            }
+        }
+        if(hasBrokenQueue === true) {
+            localStorage.setItem("purchaseTracker", btoa(JSON.stringify(queues)));
+
+            if(notifiedBrokenQueue === false) {
+                notifiedBrokenQueue = true;
+                
+                alert("Please reload page, broken queue detected (fixed but requires reload)");
+            }
+        }
+        
         // Check whether cart contains item
         if(__META_LAYER_META_DATA.order.lineItems.length > 0) {
             loggingFunction(`Cart currently has item, cancelling polling interval`);
