@@ -36,16 +36,17 @@ const settings = {
     "pauseWhenCarted": { index: 2, description: "Pause interval actions when cart occupied", type: "boolean", value: true },
     "ignoreFailed": { index: 3, description: "Ignore cart buttons if still clickable after clicked (failed)", type: "boolean", value: false },
     "refreshCartChange": { index: 4, description: "Refresh the page when cart contents change (recommended)", type: "boolean", value: true },
-    "clickTimeout": { index: 5, description: "Timeout between clicks to prevent rate limiting", type: "number", value: 1000 },
-    "globalInterval": { index: 6, description: "Global polling interval for updates (milliseconds)", type: "number", value: 250 },
-    "clickTimeout": { index: 7, description: "Script timeout when clicking add buttons (milliseconds)", type: "number", value: 1000 },
-    "autoReloadInterval": { index: 8, description: "Automatic page reloading interval (milliseconds, 0 / >= 10000)", type: "number", value: 0 },
-    "customNotification": { index: 9, description: "Hotlinking URL for custom notification (empty for default)", type: "string", value: constants.notificationSound },
-    "testNotification": { index: 10, description: "[ Press to test the current notification sound ]", type: "button", value: function() { notificationSound.play() } },
-    "useSKUWhitelist": { index: 11, description: "Override the keyword whitelist with the SKU whitelist", type: "boolean", value: false },
-    "whitelistKeywords": { index: 12, description: "Whitelisted keywords (array)", type: "array", value: constants.whitelistKeywords },
-    "blacklistKeywords": { index: 13, description: "Blacklisted keywords (array)", type: "array", value: constants.blacklistKeywords },
-    "whitelistSKUs": { index: 14, description: "Whitelisted SKUs to track (array, NOT UP-TO-DATE)", type: "array", value: constants.whitelistSKUs },
+    "brokenAutoReload": { index: 5, description: "Auto-reload when broken queue detected after fix", type: "boolean", value: true },
+    "clickTimeout": { index: 6, description: "Timeout between clicks to prevent rate limiting", type: "number", value: 1000 },
+    "globalInterval": { index: 7, description: "Global polling interval for updates (milliseconds)", type: "number", value: 250 },
+    "clickTimeout": { index: 8, description: "Script timeout when clicking add buttons (milliseconds)", type: "number", value: 1000 },
+    "autoReloadInterval": { index: 9, description: "Automatic page reloading interval (milliseconds, 0 / >= 10000)", type: "number", value: 0 },
+    "customNotification": { index: 10, description: "Hotlinking URL for custom notification (empty for default)", type: "string", value: constants.notificationSound },
+    "testNotification": { index: 11, description: "[ Press to test the current notification sound ]", type: "button", value: function() { notificationSound.play() } },
+    "useSKUWhitelist": { index: 12, description: "Override the keyword whitelist with the SKU whitelist", type: "boolean", value: false },
+    "whitelistKeywords": { index: 13, description: "Whitelisted keywords (array)", type: "array", value: constants.whitelistKeywords },
+    "blacklistKeywords": { index: 14, description: "Blacklisted keywords (array)", type: "array", value: constants.blacklistKeywords },
+    "whitelistSKUs": { index: 15, description: "Whitelisted SKUs to track (array, NOT UP-TO-DATE)", type: "array", value: constants.whitelistSKUs },
     // Note: script currently ignores bundles including the PS5 bundles
 };
 
@@ -278,7 +279,6 @@ async function trackSaved() {
 
     // Initializing polling interval with cooldown on click
     // Replace asynchronous polling with synchronous polling for delays and stuff
-    let notifiedBrokenQueue = false;
     while(true) {
         // Fix broken queues changing false => true (requires reload)
         let queues = JSON.parse(atob(localStorage.getItem("purchaseTracker") || "e30="));
@@ -292,11 +292,9 @@ async function trackSaved() {
         }
         if(hasBrokenQueue === true) {
             localStorage.setItem("purchaseTracker", btoa(JSON.stringify(queues)));
-
-            if(notifiedBrokenQueue === false) {
-                notifiedBrokenQueue = true;
-                
-                alert("Please reload page, broken queue detected (fixed but requires reload)");
+            
+            if(settings.brokenAutoReload.value === true) {
+                location.reload();
             }
         }
         
