@@ -3,11 +3,9 @@
 
 A collection (currently just one though) of Tampermonkey userscripts primarily centered around queue automation. All scripts come with a user interface for logging, settings. etc. For script support, please provide me with the script used, version, page URL, logging output (if applicable), and detailed description of the issue.
 
-⚠️ **DO NOT download anything straight from the main branch as it could be outdated (I only pull request major and minor script versions)**.⚠️  
+❗ **The Tampermonkey script has been discontinued in favor of the Chrome extension - download it [here](https://chrome.google.com/webstore/detail/autographicsutilities/dfilbjegbcfjlgcblenldhninibiljco?hl=en&authuser=0) or view the [repository](https://github.com/albert-sun/extension)**  
 
 [Join the official support Discord server](<https://discord.gg/J6zfUvGkH2>)  
-[Join Falcodrin's Discord server for drop alerts](<https://discord.gg/falcodrin>)  
-**Twitch (direct message):** AkitoApocalypse  
 [Donate via PayPal](<https://www.paypal.com/donate?business=GFVTB9U2UGDL6&currency_code=USD>) | 1KgcytPHXNwboNbXUN3ZyuASDZWt8Qcf1t | 0xAf9EB617c81B050517E9A8826E4c93DcC182AeaD
 
 # Installation  
